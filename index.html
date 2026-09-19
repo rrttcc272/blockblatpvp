@@ -1,0 +1,1667 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Block Blast Pro</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{height:100%}
+body{background:radial-gradient(ellipse at top,#1e2a5e 0%,#0f1729 40%,#05080f 100%);background-attachment:fixed;color:#fff;font-family:-apple-system,'Segoe UI',sans-serif;display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;padding:10px;user-select:none;overflow:hidden;touch-action:none;position:relative}
+body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;background:radial-gradient(circle at 20% 10%,rgba(233,69,96,.15),transparent 40%),radial-gradient(circle at 80% 80%,rgba(78,204,163,.12),transparent 40%),radial-gradient(circle at 50% 50%,rgba(197,108,240,.08),transparent 60%);animation:bgPulse 8s ease-in-out infinite}
+@keyframes bgPulse{0%,100%{opacity:.6}50%{opacity:1}}
+.screen{display:none;flex-direction:column;align-items:center;justify-content:center;width:100%;min-height:100vh;position:relative;z-index:1;opacity:0;transform:translateY(15px) scale(.98);transition:opacity .4s ease,transform .4s ease}
+.screen.active{display:flex;opacity:1;transform:translateY(0) scale(1)}
+h1{font-size:40px;margin-bottom:6px;background:linear-gradient(135deg,#e94560 0%,#f9a826 35%,#4ecca3 70%,#5b8dee 100%);background-size:200% 200%;-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;font-weight:900;letter-spacing:-1.5px;animation:gradShift 4s ease infinite;filter:drop-shadow(0 6px 16px rgba(233,69,96,.5))}
+@keyframes gradShift{0%,100%{background-position:0% 50%}50%{background-position:100% 50%}}
+.subtitle{font-size:12px;color:#8899aa;margin-bottom:20px;letter-spacing:3px;text-transform:uppercase;font-weight:600}
+.money-display{font-size:22px;color:#f9a826;margin-bottom:10px;font-weight:700;background:linear-gradient(135deg,rgba(249,168,38,.15),rgba(249,168,38,.05));padding:10px 24px;border-radius:24px;border:1px solid rgba(249,168,38,.4)}
+.level-box{width:100%;max-width:340px;margin-bottom:14px;text-align:center}
+.level-label{font-size:11px;color:#8899aa;font-weight:700;letter-spacing:1px;text-transform:uppercase;margin:4px 0}
+.xp-bar{height:10px;background:rgba(15,23,41,.8);border-radius:6px;border:1px solid rgba(91,141,238,.3);overflow:hidden}
+.xp-fill{height:100%;width:0%;background:linear-gradient(90deg,#5b8dee,#4ecca3);border-radius:6px;transition:width .5s ease}
+.menu-btn{padding:14px 36px;font-size:17px;font-weight:700;background:linear-gradient(135deg,#e94560 0%,#c5354f 100%);color:#fff;border:none;border-radius:14px;margin:5px 0;min-width:240px;cursor:pointer;box-shadow:0 8px 24px rgba(233,69,96,.4);transition:transform .15s ease}
+.menu-btn:active{transform:scale(.96)}
+.menu-btn.secondary{background:linear-gradient(135deg,#1a3a6e 0%,#0a1f4a 100%)}
+.menu-btn.difficulty{background:linear-gradient(135deg,#16213e 0%,#0f1729 100%);border:2px solid #e94560}
+.menu-btn.difficulty.veryeasy{border-color:#5b8dee}
+.menu-btn.difficulty.easy{border-color:#4ecca3}
+.menu-btn.difficulty.hard{border-color:#f9a826}
+.menu-btn.difficulty.superhard{border-color:#c56cf0}
+.menu-btn.back{background:transparent;border:1px solid #445;color:#99a;font-size:14px;margin-top:16px;min-width:180px;padding:10px 28px}
+.menu-btn.admin{background:linear-gradient(135deg,#c56cf0,#8e44ad)}
+.menu-btn.bot-toggle{background:linear-gradient(135deg,#4ecca3,#2e8b6b)}
+.menu-btn.bot-toggle.active{background:linear-gradient(135deg,#e94560,#c5354f)}
+.menu-btn.gold{background:linear-gradient(135deg,#f9a826,#e08820)}
+.menu-btn.danger{background:linear-gradient(135deg,#c0392b,#922b21)}
+.shop-item{display:flex;align-items:center;background:rgba(30,42,94,.85);border:1px solid rgba(255,255,255,.08);border-radius:16px;padding:14px;margin:6px 0;width:100%;max-width:340px}
+.shop-icon{font-size:30px;margin-right:14px}
+.shop-info{flex:1;text-align:left}
+.shop-name{font-size:15px;font-weight:800;margin-bottom:3px}
+.shop-desc{font-size:11px;color:#8899aa}
+.shop-count{font-size:11px;color:#f9a826;margin-top:3px;font-weight:600}
+.buy-btn{background:linear-gradient(135deg,#f9a826 0%,#e08820 100%);color:#fff;border:none;border-radius:12px;padding:10px 16px;font-size:14px;font-weight:800;cursor:pointer}
+.set-row{display:flex;justify-content:space-between;align-items:center;width:100%;max-width:340px;background:rgba(30,42,94,.7);border:1px solid rgba(255,255,255,.08);border-radius:12px;padding:12px 16px;margin:4px 0}
+.set-name{font-size:14px;font-weight:700}
+.set-desc{font-size:10px;color:#8899aa;margin-top:2px}
+.set-toggle{padding:8px 18px;font-size:13px;font-weight:800;border-radius:10px;border:1px solid rgba(78,204,163,.5);background:rgba(15,23,41,.8);color:#4ecca3;cursor:pointer;min-width:76px}
+.set-toggle.off{border-color:#556;color:#778}
+.stat-card{display:flex;justify-content:space-between;align-items:center;width:100%;max-width:340px;background:rgba(30,42,94,.7);border:1px solid rgba(255,255,255,.08);border-radius:12px;padding:12px 16px;margin:4px 0;font-weight:600}
+.stat-card b{color:#f9a826;font-size:17px}
+.ach-item{display:flex;align-items:center;width:100%;max-width:340px;background:rgba(30,42,94,.7);border:1px solid rgba(255,255,255,.08);border-radius:12px;padding:10px 14px;margin:4px 0;opacity:.45}
+.ach-item.unlocked{opacity:1;border-color:rgba(249,168,38,.5)}
+.ach-icon{font-size:24px;margin-right:12px}
+.ach-name{font-size:14px;font-weight:800}
+.ach-desc{font-size:11px;color:#8899aa}
+#game-screen{justify-content:flex-start;padding-top:12px}
+.game-header{display:flex;justify-content:space-between;align-items:center;width:100%;max-width:340px;margin-bottom:8px;background:rgba(30,42,94,.7);padding:10px 18px;border-radius:16px;border:1px solid rgba(255,255,255,.08)}
+.game-header .info{font-size:10px;color:#8899aa;text-transform:uppercase;letter-spacing:1.5px;font-weight:700}
+.game-header .score{font-size:24px;color:#fff;font-weight:900}
+.best-inline{font-size:10px;color:#5b8dee;font-weight:700}
+.combo-label{height:18px;font-size:13px;color:#f9a826;font-weight:900;letter-spacing:1px;margin-bottom:4px;opacity:0;transition:opacity .2s}
+.combo-label.show{opacity:1}
+.bot-score{font-size:17px;color:#f9a826;font-weight:800}
+.timer{font-size:28px;font-weight:900;color:#4ecca3;text-align:center}
+.timer.warning{color:#e94560;animation:pulse .8s infinite}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.7;transform:scale(1.06)}}
+#board{display:grid;grid-template-columns:repeat(8,1fr);gap:4px;background:#0a1020;padding:10px;border-radius:18px;border:1px solid rgba(91,141,238,.15);position:relative}
+.cell{width:36px;height:36px;background:#14264a;border-radius:8px;transition:background .2s}
+.cell.preview{box-shadow:inset 0 0 0 3px rgba(255,255,255,.95)}
+.cell.flash{background:#fff!important}
+.cell.bomb-blast{background:#ff6644!important}
+.cell.mine{background:#ff4444!important;box-shadow:inset 0 0 0 2px #fff}
+.cell.placed{background:#fff!important}
+#tray{display:flex;justify-content:space-around;align-items:center;width:100%;max-width:340px;margin-top:14px;min-height:88px;background:rgba(30,42,94,.5);border-radius:16px;padding:10px;border:1px solid rgba(255,255,255,.06)}
+.figure-wrap{display:flex;flex-direction:column;align-items:center;gap:3px}
+.figure{display:grid;gap:3px;cursor:grab;touch-action:none}
+.figure .cell{width:30px;height:30px;border-radius:7px}
+.rot-btn{width:26px;height:22px;font-size:13px;font-weight:900;background:#1a3a6e;color:#5b8dee;border:1px solid rgba(91,141,238,.5);border-radius:8px;cursor:pointer}
+#ability-bar{margin-top:12px;display:flex;flex-direction:column;align-items:center;width:100%;max-width:340px}
+.ability-btn{background:#1a3a6e;color:#4ecca3;border:1px solid rgba(78,204,163,.5);border-radius:12px;padding:10px 20px;font-size:14px;font-weight:700;cursor:pointer}
+#ability-list{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap;justify-content:center}
+.ability-use{background:#16213e;color:#fff;border:1px solid rgba(233,69,96,.5);border-radius:10px;padding:10px 14px;font-size:14px;font-weight:700;cursor:pointer}
+#no-moves{display:none;font-size:13px;color:#e94560;margin-top:10px;text-align:center;background:rgba(233,69,96,.15);padding:10px 18px;border-radius:12px;border:1px solid rgba(233,69,96,.4);font-weight:600}
+.bot-view{position:fixed;inset:0;background:rgba(0,0,0,.94);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:20;padding:20px}
+.bot-view-title{font-size:22px;color:#f9a826;margin-bottom:18px;font-weight:800}
+#bot-board{display:grid;grid-template-columns:repeat(8,1fr);gap:4px;background:#0a1020;padding:10px;border-radius:18px}
+#bot-board .cell{width:30px;height:30px}
+#gameover{display:none;position:fixed;inset:0;background:rgba(0,0,0,.9);flex-direction:column;align-items:center;justify-content:center;z-index:10}
+#gameover h2{font-size:40px;margin-bottom:16px;font-weight:900;color:#f9a826}
+#gameover .result{font-size:17px;color:#aaa;margin-bottom:10px;text-align:center;font-weight:600}
+#gameover-reward{font-size:28px;color:#f9a826;margin-bottom:16px;font-weight:900}
+#gameover-record{font-size:15px;color:#4ecca3;margin-bottom:10px;text-align:center;font-weight:700}
+#gameover-levelup{font-size:14px;color:#5b8dee;margin-bottom:14px;font-weight:700;display:none}
+#gameover button{padding:14px 36px;font-size:17px;font-weight:700;background:#c5354f;color:#fff;border:none;border-radius:14px;margin:6px;cursor:pointer}
+#gameover button.sec{background:#0f3460}
+.pause-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.85);flex-direction:column;align-items:center;justify-content:center;z-index:15}
+.pause-overlay.show{display:flex}
+.pause-title{font-size:42px;font-weight:900;color:#5b8dee;margin-bottom:26px}
+.ice-overlay{position:fixed;inset:0;pointer-events:none;z-index:5;background:rgba(100,180,255,.15);opacity:0;transition:opacity .5s}
+.ice-overlay.show{opacity:1}
+.combo-popup{position:fixed;z-index:100;font-size:26px;font-weight:900;color:#f9a826;pointer-events:none;animation:comboPop 1s ease-out forwards}
+@keyframes comboPop{0%{transform:translateY(0) scale(.6);opacity:0}20%{opacity:1;transform:translateY(-14px) scale(1.15)}100%{transform:translateY(-70px) scale(1);opacity:0}}
+.toast{position:fixed;top:18px;left:50%;transform:translateX(-50%) translateY(-80px);z-index:200;background:#1a3a6e;border:1px solid rgba(78,204,163,.5);color:#fff;padding:12px 24px;border-radius:14px;font-size:14px;font-weight:700;transition:transform .35s;max-width:90vw;text-align:center}
+.toast.show{transform:translateX(-50%) translateY(0)}
+.code-input{padding:14px 20px;font-size:15px;border-radius:12px;border:1px solid rgba(91,141,238,.3);background:rgba(15,23,41,.8);color:#fff;width:100%;max-width:280px;margin:8px 0;text-align:center;font-weight:600}
+.code-input::placeholder{color:#556}
+.admin-panel{background:#1a2a4e;border:1px solid rgba(197,108,240,.4);border-radius:18px;padding:20px;margin:12px 0;width:100%;max-width:340px}
+.admin-title{font-size:18px;color:#c56cf0;margin-bottom:10px;font-weight:800;text-align:center}
+.admin-desc{font-size:13px;color:#ccc;margin-bottom:14px;text-align:center;min-height:36px;line-height:1.4}
+.admin-nav{display:flex;justify-content:space-between;gap:10px}
+.admin-nav button{flex:1;padding:10px;font-size:18px;font-weight:800;background:#16213e;color:#c56cf0;border:1px solid #c56cf0;border-radius:10px;cursor:pointer}
+.admin-action{padding:12px;font-size:15px;font-weight:800;background:#8e44ad;color:#fff;border:none;border-radius:12px;cursor:pointer;width:100%;margin-top:10px}
+.particle{position:fixed;pointer-events:none;z-index:100;width:8px;height:8px;border-radius:50%;animation:particleFly .8s ease-out forwards}
+@keyframes particleFly{0%{transform:translate(0,0) scale(1);opacity:1}100%{transform:translate(var(--dx),var(--dy)) scale(0);opacity:0}}
+.menu-pages{display:flex;flex-direction:column;align-items:center;width:100%}
+.menu-page{display:none;flex-direction:column;align-items:center}
+.menu-page.active{display:flex}
+.page-nav{display:flex;justify-content:space-between;align-items:center;width:100%;max-width:340px;margin-top:14px;gap:10px}
+.page-nav button{flex:1;padding:12px;font-size:20px;font-weight:800;background:#0f3460;color:#5b8dee;border:1px solid rgba(91,141,238,.5);border-radius:12px;cursor:pointer}
+.page-nav button:disabled{opacity:.3}
+.page-indicator{font-size:13px;color:#8899aa;font-weight:700;min-width:60px;text-align:center}
+.admin-field{width:100%;margin:8px 0}
+.admin-label{font-size:12px;color:#8899aa;margin-bottom:4px;text-transform:uppercase;letter-spacing:1px;font-weight:700}
+.admin-row{display:flex;gap:6px}
+.admin-row input{flex:1;padding:10px;font-size:14px;border-radius:8px;border:1px solid rgba(197,108,240,.4);background:#0f1729;color:#fff;text-align:center;font-weight:600}
+.item-picker{display:flex;gap:6px;justify-content:center;margin-top:6px}
+.item-picker button{flex:1;padding:10px;font-size:20px;background:#16213e;border:2px solid rgba(197,108,240,.3);border-radius:10px;cursor:pointer;color:#fff}
+.item-picker button.active{border-color:#c56cf0;background:#2a1a4e}
+.tab-bar{display:flex;gap:6px;margin-bottom:14px;flex-wrap:wrap;justify-content:center;width:100%;max-width:340px}
+.tab-bar button{padding:8px 14px;font-size:12px;font-weight:700;background:#16213e;color:#8899aa;border:1px solid rgba(255,255,255,.08);border-radius:10px;cursor:pointer}
+.tab-bar button.active{color:#fff;border-color:#4ecca3}
+.time-row{display:flex;gap:6px;margin-top:6px}
+.time-row input{flex:2;padding:10px;font-size:14px;border-radius:8px;border:1px solid rgba(197,108,240,.4);background:#0f1729;color:#fff;text-align:center;font-weight:600}
+.time-row select{flex:1;padding:10px;font-size:13px;border-radius:8px;border:1px solid rgba(197,108,240,.4);background:#0f1729;color:#fff;font-weight:600}
+.time-row select option{background:#0f1729}
+.chat-box{width:100%;max-width:340px;background:rgba(15,23,41,.8);border:1px solid rgba(91,141,238,.3);border-radius:12px;padding:10px;margin-top:10px}
+.chat-messages{height:120px;overflow-y:auto;font-size:13px;line-height:1.5;margin-bottom:8px}
+.chat-msg{padding:4px 0;border-bottom:1px solid rgba(255,255,255,.05)}
+.chat-msg b{color:#f9a826}
+.chat-input-row{display:flex;gap:6px}
+.chat-input-row input{flex:1;padding:10px;font-size:13px;border-radius:8px;border:1px solid rgba(91,141,238,.3);background:rgba(15,23,41,.8);color:#fff}
+.chat-input-row button{padding:10px 16px;font-size:13px;font-weight:800;background:#5b8dee;color:#fff;border:none;border-radius:8px;cursor:pointer}
+.dragon-item{display:flex;justify-content:space-between;align-items:center;width:100%;background:rgba(30,42,94,.7);border:1px solid rgba(197,108,240,.3);border-radius:12px;padding:10px 14px;margin:4px 0;font-weight:600}
+.dragon-item .name{font-size:14px;font-weight:800;color:#fff}
+.dragon-item .time{font-size:10px;color:#8899aa}
+.dragon-item button{padding:6px 12px;font-size:12px;font-weight:800;background:#c0392b;color:#fff;border:none;border-radius:8px;cursor:pointer;margin-left:4px}
+.dragon-item button.ok{background:#2e8b6b}
+body.layout-mobile .cell{width:34px;height:34px}
+body.layout-mobile .figure .cell{width:28px;height:28px}
+body.layout-mobile #bot-board .cell{width:28px;height:28px}
+body.layout-mobile h1{font-size:32px}
+body.layout-mobile .menu-btn{padding:12px 28px;font-size:15px;min-width:220px}
+body.layout-mobile .game-header{padding:10px 14px}
+body.layout-mobile .game-header .score{font-size:20px}
+body.layout-mobile .timer{font-size:22px}
+body.layout-mobile .bot-score{font-size:15px}
+body.layout-desktop{padding:20px}
+body.layout-desktop .cell{width:52px;height:52px}
+body.layout-desktop .figure .cell{width:44px;height:44px}
+body.layout-desktop #bot-board .cell{width:44px;height:44px}
+body.layout-desktop h1{font-size:56px}
+body.layout-desktop .menu-btn{padding:18px 56px;font-size:20px;min-width:320px}
+body.layout-desktop .money-display{font-size:28px;padding:14px 32px}
+body.layout-desktop .game-header{max-width:520px;padding:16px 24px}
+body.layout-desktop .game-header .score{font-size:32px}
+body.layout-desktop .timer{font-size:38px}
+body.layout-desktop #board{padding:12px;gap:5px}
+body.layout-desktop #tray{max-width:520px;min-height:110px}
+body.layout-desktop .admin-panel{max-width:520px;padding:28px}
+body.layout-desktop .code-input{max-width:400px;font-size:18px}
+body.layout-desktop #gameover h2{font-size:52px}
+body.layout-desktop #gameover-reward{font-size:36px}
+body.optimized *,body.optimized *::before,body.optimized *::after{animation:none!important;transition:none!important;filter:none!important;backdrop-filter:none!important}
+body.optimized::before{display:none}
+body.optimized .particle{display:none}
+body.no-particles .particle{display:none}
+body.no-anim *,body.no-anim *::before,body.no-anim *::after{animation:none!important}
+body.no-bgfx::before{display:none}
+</style>
+</head>
+<body class="layout-mobile">
+
+<div id="main-menu" class="screen active">
+<h1>Block Blast Pro</h1>
+<div class="subtitle">выбери режим</div>
+<div class="money-display">💰 <span id="money-main">0</span></div>
+<div class="level-box">
+  <div class="level-label">Уровень <span id="lvl-num">1</span></div>
+  <div class="xp-bar"><div class="xp-fill" id="xp-fill"></div></div>
+  <div class="level-label" id="xp-text">0 / 300 XP</div>
+</div>
+
+<div class="menu-pages">
+  <div class="menu-page active" data-page="0">
+    <button class="menu-btn" onclick="showScreen('game-screen');startGame('solo')">Играть</button>
+    <button class="menu-btn secondary" onclick="showScreen('pvp-menu')">PvP</button>
+    <button class="menu-btn secondary" onclick="showScreen('shop-menu')">Магазин</button>
+    <button class="menu-btn secondary" onclick="showScreen('promo-menu')">Промокоды</button>
+  </div>
+  <div class="menu-page" data-page="1">
+    <button class="menu-btn secondary" onclick="openLeaderboard()">🏆 Лидеры</button>
+    <button class="menu-btn secondary" onclick="showScreen('online-menu')">🟢 Онлайн</button>
+    <button class="menu-btn secondary" onclick="openStats()">📊 Статистика</button>
+    <button class="menu-btn gold" onclick="openAchievements()">🏅 Достижения <span id="ach-count">0/6</span></button>
+  </div>
+  <div class="menu-page" data-page="2">
+    <button class="menu-btn secondary" onclick="showScreen('share-menu')">🎁 Поделиться</button>
+    <button class="menu-btn secondary" onclick="setName()">✏ Имя</button>
+    <button class="menu-btn secondary" onclick="showScreen('settings-menu')">⚙ Настройки</button>
+    <button class="menu-btn secondary" onclick="setSticker()" id="btn-sticker" style="display:none">🎨 Стикер</button>
+  </div>
+  <div class="menu-page" data-page="3">
+    <button id="btn-admin-main" class="menu-btn admin" style="display:none" onclick="openAdmin()">⚙ Админка</button>
+    <button id="btn-dragon-main" class="menu-btn danger" style="display:none" onclick="openDragon()">🐉 Дракон</button>
+    <button id="btn-bot-main" class="menu-btn bot-toggle" style="display:none" onclick="toggleBotFeature()">🤖 Авто-бот: <span id="bot-status">выкл</span></button>
+    <button class="menu-btn secondary" onclick="setLayout('mobile')">📱 Телефон</button>
+  </div>
+  <div class="menu-page" data-page="4">
+    <button class="menu-btn secondary" onclick="setLayout('desktop')">💻 Компьютер</button>
+  </div>
+</div>
+
+<div class="page-nav">
+  <button id="page-prev" onclick="changePage(-1)">◀</button>
+  <div class="page-indicator" id="page-ind">1 / 5</div>
+  <button id="page-next" onclick="changePage(1)">▶</button>
+</div>
+</div>
+
+<div id="settings-menu" class="screen">
+<h1>⚙ Настройки</h1>
+<div class="subtitle">графика · звук · эффекты</div>
+<div class="admin-panel" style="margin:0 0 8px 0">
+<div class="admin-title">Профили</div>
+<button class="menu-btn gold" onclick="setProfile('max')">🔥 Максимум</button>
+<button class="menu-btn secondary" onclick="setProfile('balanced')">⚖ Сбалансированный</button>
+<button class="menu-btn secondary" onclick="setProfile('eco')">🔋 Экономия</button>
+</div>
+<div id="settings-list"></div>
+<button class="menu-btn back" onclick="showScreen('main-menu')">Назад</button>
+</div>
+
+<div id="stats-menu" class="screen">
+<h1>📊 Статистика</h1>
+<div class="subtitle">твоя история</div>
+<div class="stat-card"><span>🎮 Всего игр</span><b id="st-games">0</b></div>
+<div class="stat-card"><span>🏆 Побед</span><b id="st-wins">0</b></div>
+<div class="stat-card"><span>⚔ PvP побед</span><b id="st-pvp">0</b></div>
+<div class="stat-card"><span>🧱 Линий собрано</span><b id="st-lines">0</b></div>
+<div class="stat-card"><span>🔥 Макс. комбо</span><b id="st-combo">0</b></div>
+<div class="stat-card"><span>⭐ Лучший счёт</span><b id="st-best">0</b></div>
+<div class="stat-card"><span>💰 Всего заработано</span><b id="st-earned">0</b></div>
+<div class="stat-card"><span>🎯 Уровень</span><b id="st-level">1</b></div>
+<button class="menu-btn back" onclick="showScreen('main-menu')">Назад</button>
+</div>
+
+<div id="ach-menu" class="screen">
+<h1>🏅 Достижения</h1>
+<div class="subtitle">заработай все</div>
+<div id="ach-list" style="width:100%;display:flex;flex-direction:column;align-items:center;overflow-y:auto;max-height:55vh"></div>
+<button class="menu-btn back" onclick="showScreen('main-menu')">Назад</button>
+</div>
+
+<div id="pvp-menu" class="screen">
+<h1>PvP</h1>
+<div class="subtitle">выбери противника</div>
+<button class="menu-btn" onclick="showScreen('time-menu')">Против бота</button>
+<button class="menu-btn secondary" onclick="quickMatch()">⚡ Быстрый матч</button>
+<button class="menu-btn secondary" onclick="showScreen('online-pvp-menu')">🌐 Комната по коду</button>
+<button id="btn-admin-pvp" class="menu-btn admin" style="display:none" onclick="openAdmin()">⚙ Админка</button>
+<button class="menu-btn back" onclick="showScreen('main-menu')">Назад</button>
+</div>
+
+<div id="online-pvp-menu" class="screen">
+<h1>🌐 Комната</h1>
+<div class="subtitle">по коду</div>
+<button class="menu-btn" onclick="createRoom()">🎮 Создать комнату</button>
+<button class="menu-btn secondary" onclick="showJoinRoom()">🔑 Войти по коду</button>
+<button class="menu-btn back" onclick="showScreen('pvp-menu')">Назад</button>
+<div id="room-info" style="margin-top:20px;text-align:center;width:100%;max-width:340px"></div>
+</div>
+
+<div id="search-menu" class="screen">
+<h1>🔍 Поиск</h1>
+<div class="subtitle">ищем соперника</div>
+<div class="admin-panel" style="text-align:center">
+<div style="font-size:60px;margin:20px 0">⏳</div>
+<div id="search-status" style="color:#4ecca3;font-size:16px;font-weight:700">Ищем свободного игрока...</div>
+</div>
+<button class="menu-btn back" onclick="cancelQuickMatch()">Отменить</button>
+</div>
+
+<div id="leaderboard-menu" class="screen">
+<h1>🏆 Лидеры</h1>
+<div class="subtitle">таблицы</div>
+<div class="tab-bar">
+<button class="active" onclick="switchTab('score')" id="tab-score">Очки (solo)</button>
+<button onclick="switchTab('pvp')" id="tab-pvp">PvP победы</button>
+<button onclick="switchTab('money')" id="tab-money">Монеты</button>
+<button onclick="switchTab('level')" id="tab-level">Уровень</button>
+</div>
+<div id="leaderboard-list" style="width:100%;max-width:400px;max-height:55vh;overflow-y:auto;padding:8px"></div>
+<button class="menu-btn back" onclick="showScreen('main-menu')">Назад</button>
+</div>
+
+<div id="online-menu" class="screen">
+<h1>🟢 Онлайн</h1>
+<div class="subtitle">активны за 5 минут</div>
+<div id="online-list" style="width:100%;max-width:400px;max-height:40vh;overflow-y:auto;padding:8px"></div>
+<div class="chat-box">
+<div class="chat-messages" id="chat-messages"></div>
+<div class="chat-input-row">
+<input type="text" id="chat-input" placeholder="Сообщение..." maxlength="80">
+<button onclick="sendChat()">Отпр</button>
+</div>
+</div>
+<button class="menu-btn back" onclick="showScreen('main-menu')">Назад</button>
+</div>
+
+<div id="share-menu" class="screen">
+<h1>🎁 Поделиться</h1>
+<div class="subtitle">монеты или админка</div>
+<div class="admin-panel">
+<div class="admin-title">Ник получателя</div>
+<input type="text" id="share-nick" class="code-input" placeholder="ник игрока">
+<div class="admin-title" style="margin-top:14px">Что дать</div>
+<div class="item-picker">
+<button id="share-type-money" class="active" onclick="setShareType('money')">💰 Монеты</button>
+<button id="share-type-admin" onclick="setShareType('admin')">⚙ Админка</button>
+</div>
+<div id="share-money-block" style="margin-top:14px">
+<div class="admin-label">Сколько монет</div>
+<input type="text" id="share-amount" class="code-input" placeholder="например 500">
+</div>
+<div id="share-admin-block" style="margin-top:14px;display:none">
+<div class="admin-label">На сколько дать админку</div>
+<div class="time-row">
+<input type="text" id="share-time-val" placeholder="1">
+<select id="share-time-unit">
+<option value="min">минут</option>
+<option value="hour" selected>часов</option>
+<option value="day">дней</option>
+<option value="month">месяцев</option>
+</select>
+</div>
+</div>
+<button class="admin-action" onclick="doShare()">Отправить</button>
+</div>
+<button class="menu-btn back" onclick="showScreen('main-menu')">Назад</button>
+</div>
+
+<div id="promo-menu" class="screen">
+<h1>Промокоды</h1>
+<div class="subtitle">введи код</div>
+<input type="text" id="promo-input" class="code-input" placeholder="код">
+<button class="menu-btn" onclick="applyPromo()">Применить</button>
+<button class="menu-btn back" onclick="showScreen('main-menu')">Назад</button>
+</div>
+
+<div id="bot-mode-menu" class="screen">
+<h1>Авто-бот</h1>
+<div class="subtitle">выбери уровень</div>
+<button class="menu-btn difficulty veryeasy" onclick="setAutoBot(0)">Очень легко</button>
+<button class="menu-btn difficulty easy" onclick="setAutoBot(1)">Легко</button>
+<button class="menu-btn difficulty" onclick="setAutoBot(2)">Средне</button>
+<button class="menu-btn difficulty hard" onclick="setAutoBot(3)">Сложно</button>
+<button class="menu-btn difficulty superhard" onclick="setAutoBot(4)">Супер сложно</button>
+<button class="menu-btn back" onclick="showScreen('main-menu')">Назад</button>
+</div>
+
+<div id="admin-menu" class="screen">
+<h1>Админка</h1>
+<div class="subtitle">функции</div>
+<div class="admin-panel">
+<div class="admin-title" id="admin-title">Функция 1/17</div>
+<div class="admin-desc" id="admin-desc"></div>
+<div id="admin-input-area"></div>
+<button class="admin-action" id="admin-action-btn" onclick="adminAction()">Выполнить</button>
+<div class="admin-nav" style="margin-top:12px">
+<button onclick="adminPrev()">◀</button>
+<button onclick="adminNext()">▶</button>
+</div>
+</div>
+<button class="menu-btn back" onclick="showScreen('main-menu')">Назад</button>
+</div>
+
+<div id="dragon-menu" class="screen">
+<h1>🐉 Дракон</h1>
+<div class="subtitle">власть над сервером</div>
+
+<div class="menu-pages" id="dragon-pages">
+  <div class="menu-page active" data-dpage="0">
+    <div class="admin-panel">
+      <div class="admin-title">⚠ Полный сброс сервера</div>
+      <div class="admin-desc">Удалить ВСЕ данные</div>
+      <button class="menu-btn danger" onclick="dragonWipeServer()">🔥 СБРОСИТЬ ВСЁ</button>
+    </div>
+  </div>
+  <div class="menu-page" data-dpage="1">
+    <div class="admin-panel">
+      <div class="admin-title">🚫 Забанить игрока</div>
+      <div class="admin-label">Ник</div>
+      <input type="text" id="dragon-ban-nick" class="code-input" placeholder="ник">
+      <div class="admin-label">Причина</div>
+      <input type="text" id="dragon-ban-reason" class="code-input" placeholder="причина">
+      <div class="admin-label">Время</div>
+      <div class="time-row">
+        <input type="text" id="dragon-ban-time" placeholder="1">
+        <select id="dragon-ban-unit">
+          <option value="min">минут</option>
+          <option value="hour" selected>часов</option>
+          <option value="day">дней</option>
+          <option value="month">месяцев</option>
+          <option value="forever">навсегда</option>
+        </select>
+      </div>
+      <button class="admin-action" onclick="dragonBan()">🚫 Забанить</button>
+    </div>
+  </div>
+  <div class="menu-page" data-dpage="2">
+    <div class="admin-panel">
+      <div class="admin-title">📋 Все игроки</div>
+      <div id="dragon-players-list" style="max-height:40vh;overflow-y:auto"></div>
+      <button class="admin-action" onclick="loadDragonPlayers()">🔄 Обновить</button>
+    </div>
+  </div>
+  <div class="menu-page" data-dpage="3">
+    <div class="admin-panel">
+      <div class="admin-title">🚫 Активные баны</div>
+      <div id="dragon-bans-list" style="max-height:40vh;overflow-y:auto"></div>
+      <button class="admin-action" onclick="loadDragonBans()">🔄 Обновить</button>
+    </div>
+  </div>
+</div>
+
+<div class="page-nav">
+  <button id="dragon-prev" onclick="changeDragonPage(-1)">◀</button>
+  <div class="page-indicator" id="dragon-page-ind">1 / 4</div>
+  <button id="dragon-next" onclick="changeDragonPage(1)">▶</button>
+</div>
+
+<button class="menu-btn back" onclick="showScreen('main-menu')">Назад</button>
+</div>
+
+<div id="time-menu" class="screen">
+<h1>Время</h1>
+<div class="subtitle">сколько длится бой</div>
+<button class="menu-btn" onclick="setTime(30)">30 секунд</button>
+<button class="menu-btn" onclick="setTime(60)">1 минута</button>
+<button class="menu-btn" onclick="setTime(120)">2 минуты</button>
+<button class="menu-btn" onclick="setTime(180)">3 минуты</button>
+<button class="menu-btn" onclick="setTime(240)">4 минуты</button>
+<button class="menu-btn" onclick="setTime(300)">5 минут</button>
+<button class="menu-btn back" onclick="showScreen('pvp-menu')">Назад</button>
+</div>
+
+<div id="difficulty-menu" class="screen">
+<h1>Сложность</h1>
+<div class="subtitle">выбери уровень бота</div>
+<button class="menu-btn difficulty veryeasy" onclick="showScreen('game-screen');startGame('bot',0)">Очень легко</button>
+<button class="menu-btn difficulty easy" onclick="showScreen('game-screen');startGame('bot',1)">Легко</button>
+<button class="menu-btn difficulty" onclick="showScreen('game-screen');startGame('bot',2)">Средне</button>
+<button class="menu-btn difficulty hard" onclick="showScreen('game-screen');startGame('bot',3)">Сложно</button>
+<button class="menu-btn difficulty superhard" onclick="showScreen('game-screen');startGame('bot',4)">Супер сложно</button>
+<button class="menu-btn back" onclick="showScreen('time-menu')">Назад</button>
+</div>
+
+<div id="shop-menu" class="screen">
+<h1>Магазин</h1>
+<div class="money-display">💰 <span id="money-shop">0</span></div>
+<div class="shop-item"><div class="shop-icon">🧊</div><div class="shop-info"><div class="shop-name">Лёд</div><div class="shop-desc">Замораживает соперника на 5 сек</div><div class="shop-count">У тебя: <span id="cnt-ice">0</span></div></div><button class="buy-btn" onclick="buyItem('ice')">50</button></div>
+<div class="shop-item"><div class="shop-icon">💣</div><div class="shop-info"><div class="shop-name">Бомба</div><div class="shop-desc">Ломает блоки 3×3</div><div class="shop-count">У тебя: <span id="cnt-bomb">0</span></div></div><button class="buy-btn" onclick="buyItem('bomb')">80</button></div>
+<div class="shop-item"><div class="shop-icon">💥</div><div class="shop-info"><div class="shop-name">Мина</div><div class="shop-desc">Ставится на поле соперника</div><div class="shop-count">У тебя: <span id="cnt-mine">0</span></div></div><button class="buy-btn" onclick="buyItem('mine')">150</button></div>
+<div class="shop-item"><div class="shop-icon">↩️</div><div class="shop-info"><div class="shop-name">Отмена хода</div><div class="shop-desc">+1 отмена хода в игре</div><div class="shop-count">Всего отмен: <span id="cnt-undo">0</span></div></div><button class="buy-btn" onclick="buyItem('undo')">60</button></div>
+<button class="menu-btn back" onclick="showScreen('main-menu')">Назад</button>
+</div>
+
+<div id="game-screen" class="screen">
+<div class="game-header">
+<div><div class="info">Очки</div><div class="score" id="score">0</div><div class="best-inline" id="best-inline">Рекорд: 0</div></div>
+<div>
+  <div class="timer" id="timer">—</div>
+  <div class="combo-label" id="combo-label">🔥 КОМБО x2</div>
+</div>
+<div style="text-align:right"><div class="info" id="opp-label">Бот</div><div class="bot-score" id="bot-score">—</div></div>
+</div>
+<div id="board"></div>
+<div id="tray"></div>
+<div id="ability-bar">
+<button class="ability-btn" id="toggle-abilities" onclick="toggleAbilities()">🎯 Способности</button>
+<div id="ability-list" style="display:none">
+<button class="ability-use" onclick="useAbility('ice')">🧊 <span id="game-ice">0</span></button>
+<button class="ability-use" onclick="useAbility('bomb')">💣 <span id="game-bomb">0</span></button>
+<button class="ability-use" onclick="useAbility('mine')">💥 <span id="game-mine">0</span></button>
+<button class="ability-use" onclick="watchBot()">👁 Соперник</button>
+</div>
+</div>
+<div style="display:flex;gap:8px;margin-top:10px;flex-wrap:wrap;justify-content:center">
+<button class="ability-btn" onclick="pauseGame()">⏸ Пауза</button>
+<button class="ability-btn" id="undo-btn" onclick="undoMove()">↩ Отмена (<span id="undo-count">0</span>)</button>
+<button class="ability-btn" onclick="earlyExit()" style="border-color:#e94560;color:#e94560">✖ Выйти</button>
+<button id="btn-admin-game" class="ability-btn" style="display:none;border-color:#c56cf0;color:#c56cf0" onclick="openAdmin()">⚙ Админ</button>
+</div>
+<div id="no-moves">Ходов нет — ждём конца таймера</div>
+<div id="bot-view" class="bot-view" style="display:none">
+<div class="bot-view-title" id="opp-view-title">Поле соперника</div>
+<div id="bot-board"></div>
+<button class="menu-btn back" onclick="closeBotView()">Закрыть</button>
+</div>
+</div>
+
+<div id="pause-overlay" class="pause-overlay">
+<div class="pause-title">⏸ ПАУЗА</div>
+<button class="menu-btn" onclick="resumeGame()">▶ Продолжить</button>
+<button class="menu-btn secondary" onclick="earlyExitFromPause()">Завершить игру</button>
+</div>
+
+<div id="gameover">
+<h2 id="gameover-title">Игра окончена</h2>
+<div class="result" id="gameover-result"></div>
+<div id="gameover-reward"></div>
+<div id="gameover-record"></div>
+<div id="gameover-levelup">⬆️ Новый уровень!</div>
+<button onclick="restartCurrent()">Заново</button>
+<button class="sec" onclick="backToMenu()">В меню</button>
+</div>
+
+<div id="ice-overlay" class="ice-overlay"></div>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+var SUPABASE_URL='https://qbcllagmzybeugxgyucf.supabase.co';
+var SUPABASE_KEY='sb_publishable_LzNDQ7jWxpZeeIsP85mqtA_ACrQVsuu';
+var sb=null;
+try{if(window.supabase){sb=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);console.log('Supabase ready')}}catch(e){console.log('Supabase error',e)}
+
+var SIZE=8;
+var boardEl,trayEl,scoreEl,botScoreEl,timerEl,gameoverEl,gameoverTitle,gameoverResult,gameoverReward,gameoverRecord,noMovesEl,botBoardEl,iceOverlay;
+var grid=[],score=0,figures=[],mode='solo',botLevel=0,botScore=0,botGrid=[];
+var botTimer=null,botFrozenUntil=0,autoBotTimer=null;
+var selectedTime=60,timeLeft=60,countdownTimer=null,gameActive=false,playerStuck=false,abilitiesMode=false,mines=[];
+var inventory={ice:0,bomb:0,mine:0,undo:0},money=0,bestScore=0;
+var bombMode=false;
+var hasAdmin=false,hasBotFeature=false,autoBotEnabled=false,autoBotLevel=2;
+var usedTokens=false;
+var layout='mobile';
+var mySticker='';
+var menuPage=0;
+var pvpWins=0;
+var selectedItem='ice';
+var shareType='money';
+var hasAdminUnlocked=false;
+var hasBotUnlocked=false;
+var isDragon=false;
+var optimized=false;
+var roomCode=null,roomId=null,roomData=null,myRole=null;
+var matchSearchTimer=null,matchFound=false;
+var roomPollTimer=null,chatPollTimer=null,roomPingTimer=null;
+var combo=0;
+var undoData=null,undoLeft=0;
+var paused=false;
+var rotationEnabled=true;
+var xp=0,level=1;
+var lastDaily='';
+var stats={games:0,wins:0,lines:0,earned:0,maxCombo:0};
+var achUnlocked=[];
+var audioCtx=null;
+var settings={particles:true,animations:true,glow:true,bgfx:true,sound:false,vibration:true};
+var dragonPage=0;
+var gameEnded=false;
+var lastChatSent=0;
+
+var FIGURES=[[[1]],[[1,1]],[[1],[1]],[[1,1,1]],[[1],[1],[1]],[[1,1],[1,1]],[[1,1,1,1]],[[1],[1],[1],[1]],[[1,0],[1,1]],[[0,1],[1,1]],[[1,1],[1,0]],[[1,1],[0,1]],[[1,1,1],[0,1,0]],[[0,1,0],[1,1,1]],[[1,1,1],[1,0,0]],[[1,1,1],[0,0,1]],[[1,0,0],[1,1,1]],[[0,0,1],[1,1,1]]];
+var COLORS=['#e94560','#f9a826','#4ecca3','#5b8dee','#c56cf0'];
+
+var SETTING_DEFS=[
+ {key:'particles',name:'✨ Частицы',desc:'Взрывы искр'},
+ {key:'animations',name:'🎞 Анимации',desc:'Плавные эффекты'},
+ {key:'glow',name:'💡 Свечения',desc:'Тени и подсветки'},
+ {key:'bgfx',name:'🌌 Фон',desc:'Анимированные пятна'},
+ {key:'sound',name:'🔊 Звук',desc:'Эффекты игры'},
+ {key:'vibration',name:'📳 Вибрация',desc:'Отклик на телефоне'}
+];
+
+var ACHIEVEMENTS=[
+ {id:'line',icon:'🧱',name:'Первая линия',desc:'Собери одну линию',check:function(){return stats.lines>=1}},
+ {id:'combo3',icon:'🔥',name:'Комбо-мастер',desc:'Достигни комбо x3',check:function(){return stats.maxCombo>=3}},
+ {id:'score500',icon:'⭐',name:'Снайпер',desc:'Набери 500 очков',check:function(){return bestScore>=500}},
+ {id:'winbot',icon:'🏆',name:'Победитель',desc:'Победи бота',check:function(){return stats.wins>=1}},
+ {id:'rich',icon:'💰',name:'Богач',desc:'1000 монет',check:function(){return money>=1000}},
+ {id:'pvp10',icon:'⚔️',name:'Гладиатор',desc:'10 PvP побед',check:function(){return pvpWins>=10}}
+];
+
+var ADMIN_FUNCTIONS=[
+  {title:'Установить монеты',desc:'Точное количество',fields:[{key:'amount',label:'Монеты',placeholder:'1000'}],action:function(v){money=parseInt(v.amount)||0;saveGame();updateMoneyDisplay()}},
+  {title:'Установить очки (в бою)',desc:'Очки в текущей битве',fields:[{key:'amount',label:'Очки',placeholder:'500'}],action:function(v){score=parseInt(v.amount)||0;if(scoreEl)scoreEl.textContent=score}},
+  {title:'Установить очки (обычная)',desc:'Очки в обычной игре',fields:[{key:'amount',label:'Очки',placeholder:'500'}],action:function(v){score=parseInt(v.amount)||0;if(scoreEl)scoreEl.textContent=score}},
+  {title:'Установить предмет',desc:'Выбери предмет и количество',fields:[{key:'type',label:'Предмет',type:'items'},{key:'amount',label:'Количество',placeholder:'10'}],action:function(v){var t=v.type||'ice';var n=parseInt(v.amount)||0;inventory[t]=n;saveGame();updateMoneyDisplay()}},
+  {title:'Выдать отмены хода',desc:'Добавить отмены',fields:[{key:'amount',label:'Кол-во',placeholder:'5'}],action:function(v){inventory.undo=(inventory.undo||0)+(parseInt(v.amount)||0);saveGame();updateMoneyDisplay();toast('Отмен добавлено!')}},
+  {title:'Выдать XP',desc:'Добавить опыт',fields:[{key:'amount',label:'XP',placeholder:'100'}],action:function(v){addXp(parseInt(v.amount)||0);toast('XP добавлено!')}},
+  {title:'Установить уровень',desc:'Точный уровень',fields:[{key:'amount',label:'Уровень',placeholder:'5'}],action:function(v){level=parseInt(v.amount)||1;xp=0;saveGame();updateLevelUI()}},
+  {title:'Сбросить монеты',desc:'Обнулить деньги',fields:[],action:function(){money=0;saveGame();updateMoneyDisplay();toast('Монеты сброшены')}},
+  {title:'Сбросить предметы',desc:'Убрать все предметы',fields:[],action:function(){inventory={ice:0,bomb:0,mine:0,undo:0};saveGame();updateMoneyDisplay();toast('Предметы сброшены')}},
+  {title:'Сбросить очки и рекорд',desc:'Обнулить рекорд',fields:[],action:function(){bestScore=0;saveGame();updateMoneyDisplay();toast('Рекорд сброшен')}},
+  {title:'Сбросить опыт',desc:'Обнулить XP и уровень',fields:[],action:function(){xp=0;level=1;saveGame();updateLevelUI();toast('Опыт сброшен')}},
+  {title:'Сбросить ВСЁ',desc:'Полный сброс всего',fields:[],action:function(){if(confirm('Точно всё сбросить?')){money=0;inventory={ice:0,bomb:0,mine:0,undo:0};bestScore=0;xp=0;level=1;pvpWins=0;stats={games:0,wins:0,lines:0,earned:0,maxCombo:0};saveGame();updateMoneyDisplay();updateLevelUI();toast('Всё сброшено!')}}},
+  {title:'Отключить adminsh',desc:'Убрать админку',fields:[],action:function(){hasAdminUnlocked=false;hasAdmin=false;saveGame();applyUnlocks();alert('Админка отключена')}},
+  {title:'Отключить bot',desc:'Убрать авто-бота',fields:[],action:function(){hasBotUnlocked=false;hasBotFeature=false;autoBotEnabled=false;saveGame();applyUnlocks();updateBotStatus();alert('Авто-бот отключён')}},
+  {title:'Сбросить PvP победы',desc:'Обнулить PvP',fields:[],action:function(){pvpWins=0;saveGame();toast('PvP победы сброшены')}},
+  {title:'Отправить монеты в лидерборд',desc:'Записать баланс',fields:[],action:function(){pushMoneyToLeaderboard();toast('Отправлено')}},
+  {title:'Отправить уровень в лидерборд',desc:'Записать уровень',fields:[],action:function(){pushLevelToLeaderboard();toast('Отправлено')}},
+  {title:'Очистить сохранение',desc:'Полный сброс local',fields:[],action:function(){if(confirm('Точно?')){localStorage.removeItem('bb_save');location.reload()}}}
+];
+var adminIndex=0;
+
+function init(){
+boardEl=document.getElementById('board');trayEl=document.getElementById('tray');scoreEl=document.getElementById('score');
+botScoreEl=document.getElementById('bot-score');timerEl=document.getElementById('timer');gameoverEl=document.getElementById('gameover');
+gameoverTitle=document.getElementById('gameover-title');gameoverResult=document.getElementById('gameover-result');
+gameoverReward=document.getElementById('gameover-reward');gameoverRecord=document.getElementById('gameover-record');
+noMovesEl=document.getElementById('no-moves');botBoardEl=document.getElementById('bot-board');
+iceOverlay=document.getElementById('ice-overlay');
+var savedName=localStorage.getItem('bb_name');
+if(!savedName||savedName==='Гость'||savedName==='Игрок'){
+  var rnd=Math.floor(Math.random()*9000)+1000;
+  localStorage.setItem('bb_name','Игрок'+rnd);
+}
+loadSave();updateMoneyDisplay();applyUnlocks();updateBotStatus();applyOptimSettings();updateLevelUI();renderSettings();
+try{updatePageUI()}catch(e){}
+try{startGame('solo')}catch(e){}
+try{heartbeat()}catch(e){}
+try{checkAdminExpiry()}catch(e){}
+try{checkDaily()}catch(e){}
+try{checkAchievements(true)}catch(e){}
+try{checkBan()}catch(e){}
+try{registerPlayer()}catch(e){}
+setInterval(function(){try{heartbeat()}catch(e){}},120000);
+setInterval(function(){try{checkAdminExpiry()}catch(e){}},120000);
+setInterval(function(){try{checkBan()}catch(e){}},15000);
+}
+
+window.addEventListener('beforeunload',function(){try{saveGame()}catch(e){}});
+
+function loadSave(){
+try{var s=localStorage.getItem('bb_save');
+if(s){var d=JSON.parse(s);
+money=d.money||0;inventory=Object.assign({ice:0,bomb:0,mine:0,undo:0},d.inventory||{});
+bestScore=d.bestScore||0;hasAdmin=d.hasAdmin||false;
+hasBotFeature=d.hasBotFeature||false;autoBotEnabled=d.autoBotEnabled||false;
+autoBotLevel=d.autoBotLevel!==undefined?d.autoBotLevel:2;
+usedTokens=d.usedTokens||false;layout=d.layout||'mobile';mySticker=d.mySticker||'';
+pvpWins=d.pvpWins||0;hasAdminUnlocked=d.hasAdminUnlocked||false;
+hasBotUnlocked=d.hasBotUnlocked||false;isDragon=d.isDragon||false;
+optimized=d.optimized||false;xp=d.xp||0;level=d.level||1;lastDaily=d.lastDaily||'';
+stats=Object.assign({games:0,wins:0,lines:0,earned:0,maxCombo:0},d.stats||{});
+achUnlocked=d.achUnlocked||[];
+settings=Object.assign({particles:true,animations:true,glow:true,bgfx:true,sound:false,vibration:true},d.settings||{});
+rotationEnabled=d.rotationEnabled!==undefined?d.rotationEnabled:true;
+}}catch(e){}
+applyLayout();
+}
+function saveGame(){try{localStorage.setItem('bb_save',JSON.stringify({money:money,inventory:inventory,bestScore:bestScore,hasAdmin:hasAdmin,hasBotFeature:hasBotFeature,autoBotEnabled:autoBotEnabled,autoBotLevel:autoBotLevel,usedTokens:usedTokens,layout:layout,mySticker:mySticker,pvpWins:pvpWins,hasAdminUnlocked:hasAdminUnlocked,hasBotUnlocked:hasBotUnlocked,isDragon:isDragon,optimized:optimized,xp:xp,level:level,lastDaily:lastDaily,stats:stats,achUnlocked:achUnlocked,settings:settings,rotationEnabled:rotationEnabled}))}catch(e){}}
+
+function updateMoneyDisplay(){
+var a=document.getElementById('money-main');if(a)a.textContent=money;
+var b=document.getElementById('money-shop');if(b)b.textContent=money;
+var c=document.getElementById('cnt-ice');if(c)c.textContent=inventory.ice;
+var d=document.getElementById('cnt-bomb');if(d)d.textContent=inventory.bomb;
+var e=document.getElementById('cnt-mine');if(e)e.textContent=inventory.mine;
+var f=document.getElementById('cnt-undo');if(f)f.textContent=inventory.undo||0;
+var bi=document.getElementById('best-inline');if(bi)bi.textContent='Рекорд: '+bestScore;
+var ac=document.getElementById('ach-count');if(ac)ac.textContent=achUnlocked.length+'/'+ACHIEVEMENTS.length;
+}
+function applyUnlocks(){
+var adm=hasAdminUnlocked;
+var ids=['btn-admin-main','btn-admin-pvp','btn-admin-game','btn-sticker'];
+for(var i=0;i<ids.length;i++){var el=document.getElementById(ids[i]);if(el)el.style.display=adm?'block':'none';}
+var botBtn=document.getElementById('btn-bot-main');
+if(botBtn)botBtn.style.display=hasBotUnlocked?'block':'none';
+var dragonBtn=document.getElementById('btn-dragon-main');
+if(dragonBtn)dragonBtn.style.display=isDragon?'block':'none';
+}
+function updateBotStatus(){
+var s=document.getElementById('bot-status');
+if(s)s.textContent=autoBotEnabled?'вкл ('+['оч.лёгкий','лёгкий','средний','сложный','супер'][autoBotLevel]+')':'выкл';
+var btn=document.getElementById('btn-bot-main');
+if(btn){if(autoBotEnabled)btn.classList.add('active');else btn.classList.remove('active')}
+}
+function applyLayout(){document.body.classList.remove('layout-mobile','layout-desktop');document.body.classList.add('layout-'+layout)}
+function applyOptimSettings(){
+var b=document.body;
+b.classList.toggle('optimized',optimized);
+b.classList.toggle('no-particles',optimized||!settings.particles);
+b.classList.toggle('no-anim',optimized||!settings.animations);
+b.classList.toggle('no-glow',optimized||!settings.glow);
+b.classList.toggle('no-bgfx',optimized||!settings.bgfx);
+}
+function renderSettings(){
+var el=document.getElementById('settings-list');if(!el)return;
+el.innerHTML='';
+for(var i=0;i<SETTING_DEFS.length;i++){
+var d=SETTING_DEFS[i];
+var on=settings[d.key];
+var row=document.createElement('div');row.className='set-row';
+row.innerHTML='<div><div class="set-name">'+d.name+'</div><div class="set-desc">'+d.desc+'</div></div>';
+var btn=document.createElement('button');
+btn.className='set-toggle'+(on?'':' off');
+btn.textContent=on?'Вкл':'Выкл';
+btn.onclick=(function(key){return function(){settings[key]=!settings[key];saveGame();applyOptimSettings();renderSettings();playSound('click')}})(d.key);
+row.appendChild(btn);el.appendChild(row);
+}}
+function setProfile(p){
+if(p==='max'){optimized=false;settings={particles:true,animations:true,glow:true,bgfx:true,sound:false,vibration:settings.vibration}}
+else if(p==='balanced'){optimized=false;settings.particles=true;settings.animations=true;settings.glow=false;settings.bgfx=false;settings.sound=false}
+else{optimized=true;settings.particles=false;settings.animations=false;settings.glow=false;settings.bgfx=false;settings.sound=false}
+saveGame();applyOptimSettings();renderSettings();playSound('click');
+toast(p==='max'?'Профиль: Максимум 🔥':p==='balanced'?'Профиль: Сбалансированный ⚖':'Профиль: Экономия 🔋');
+}
+function setOptimized(v){optimized=v;if(v){settings.particles=false;settings.animations=false;settings.glow=false;settings.bgfx=false}else{settings.particles=true;settings.animations=true;settings.glow=true;settings.bgfx=true}saveGame();applyOptimSettings();renderSettings()}
+function setLayout(m){layout=m;saveGame();applyLayout();playSound('click');toast(m==='mobile'?'📱 Режим телефона':'💻 Режим компьютера')}
+
+function ensureAudio(){if(!audioCtx){try{audioCtx=new (window.AudioContext||window.webkitAudioContext)()}catch(e){}}return audioCtx}
+function playSound(name){
+if(optimized||!settings.sound)return;
+var ctx=ensureAudio();if(!ctx)return;
+if(ctx.state==='suspended'){try{ctx.resume()}catch(e){}}
+var map={click:[520,0.05,'sine',0.12],place:[330,0.09,'triangle',0.18],clear:[660,0.14,'sine',0.2],combo:[880,0.18,'sine',0.22],win:[523,0.35,'triangle',0.25],lose:[196,0.35,'sawtooth',0.15],coin:[988,0.12,'sine',0.2],chat:[700,0.08,'sine',0.15]};
+var cfg=map[name]||map.click;
+try{
+var o=ctx.createOscillator(),g=ctx.createGain();
+o.type=cfg[2];o.frequency.value=cfg[0];
+g.gain.setValueAtTime(cfg[3],ctx.currentTime);
+g.gain.exponentialRampToValueAtTime(0.001,ctx.currentTime+cfg[1]);
+o.connect(g);g.connect(ctx.destination);
+o.start();o.stop(ctx.currentTime+cfg[1]);
+}catch(e){}
+}
+function vibrate(ms){if(settings.vibration&&!optimized&&navigator.vibrate){try{navigator.vibrate(ms)}catch(e){}}}
+function toast(msg){
+var t=document.createElement('div');t.className='toast';t.textContent=msg;document.body.appendChild(t);
+requestAnimationFrame(function(){t.classList.add('show')});
+setTimeout(function(){t.classList.remove('show');setTimeout(function(){t.remove()},400)},2400);
+}
+function showComboPopup(mult,bonus){
+var b=boardEl.getBoundingClientRect();
+var p=document.createElement('div');p.className='combo-popup';
+p.textContent='🔥 КОМБО x'+mult+'  +'+bonus;
+p.style.left=(b.left+b.width/2-80)+'px';p.style.top=(b.top+30)+'px';
+document.body.appendChild(p);setTimeout(function(){p.remove()},1000);
+var lbl=document.getElementById('combo-label');
+if(lbl){lbl.textContent='🔥 КОМБО x'+mult;lbl.classList.add('show');clearTimeout(lbl._t);lbl._t=setTimeout(function(){lbl.classList.remove('show')},2500)}
+}
+function xpNeed(){return level*300}
+function addXp(n){
+var oldLevel=level;xp+=n;
+while(xp>=xpNeed()){xp-=xpNeed();level++}
+saveGame();updateLevelUI();
+if(level>oldLevel){var el=document.getElementById('gameover-levelup');if(el){el.style.display='block';el.textContent='⬆️ Новый уровень: '+level+'!'}toast('⬆️ Уровень '+level+'!');playSound('win')}
+}
+function updateLevelUI(){
+var n=document.getElementById('lvl-num');if(n)n.textContent=level;
+var f=document.getElementById('xp-fill');if(f)f.style.width=Math.min(100,Math.round(xp/xpNeed()*100))+'%';
+var t=document.getElementById('xp-text');if(t)t.textContent=xp+' / '+xpNeed()+' XP';
+}
+function checkDaily(){
+var today=new Date().toDateString();
+if(lastDaily===today)return;
+lastDaily=today;
+var bonus=100+level*10;money+=bonus;stats.earned=(stats.earned||0)+bonus;
+saveGame();updateMoneyDisplay();
+setTimeout(function(){toast('🎁 Ежедневная награда: +'+bonus+' 💰');playSound('coin')},600);
+checkAchievements();
+}
+function checkAchievements(silent){
+var changed=false;
+for(var i=0;i<ACHIEVEMENTS.length;i++){
+var a=ACHIEVEMENTS[i];
+if(achUnlocked.indexOf(a.id)===-1){
+try{if(a.check()){achUnlocked.push(a.id);changed=true;if(!silent){toast('🏅 '+a.name);playSound('win');vibrate([50,50,50])}}}catch(e){}
+}}
+if(changed){saveGame();updateMoneyDisplay()}
+}
+function openAchievements(){
+showScreen('ach-menu');
+var el=document.getElementById('ach-list');el.innerHTML='';
+for(var i=0;i<ACHIEVEMENTS.length;i++){
+var a=ACHIEVEMENTS[i];
+var un=achUnlocked.indexOf(a.id)!==-1;
+var div=document.createElement('div');
+div.className='ach-item'+(un?' unlocked':'');
+div.innerHTML='<div class="ach-icon">'+(un?a.icon:'🔒')+'</div><div><div class="ach-name">'+a.name+'</div><div class="ach-desc">'+a.desc+'</div></div>';
+el.appendChild(div);
+}}
+function openStats(){
+showScreen('stats-menu');
+document.getElementById('st-games').textContent=stats.games||0;
+document.getElementById('st-wins').textContent=stats.wins||0;
+document.getElementById('st-pvp').textContent=pvpWins||0;
+document.getElementById('st-lines').textContent=stats.lines||0;
+document.getElementById('st-combo').textContent=stats.maxCombo||0;
+document.getElementById('st-best').textContent=bestScore||0;
+document.getElementById('st-earned').textContent=stats.earned||0;
+document.getElementById('st-level').textContent=level;
+}
+function changePage(dir){
+var pages=document.querySelectorAll('#main-menu .menu-page');
+menuPage=Math.max(0,Math.min(pages.length-1,menuPage+dir));
+updatePageUI();playSound('click');
+}
+function updatePageUI(){
+var pages=document.querySelectorAll('#main-menu .menu-page');
+for(var i=0;i<pages.length;i++){pages[i].classList.toggle('active',i===menuPage)}
+var ind=document.getElementById('page-ind');
+if(ind)ind.textContent=(menuPage+1)+' / '+pages.length;
+var pv=document.getElementById('page-prev'),nx=document.getElementById('page-next');
+if(pv)pv.disabled=menuPage===0;
+if(nx)nx.disabled=menuPage===pages.length-1;
+}
+function changeDragonPage(dir){
+var pages=document.querySelectorAll('#dragon-pages .menu-page');
+dragonPage=Math.max(0,Math.min(pages.length-1,dragonPage+dir));
+updateDragonPageUI();
+}
+function updateDragonPageUI(){
+var pages=document.querySelectorAll('#dragon-pages .menu-page');
+for(var i=0;i<pages.length;i++){pages[i].classList.toggle('active',i===dragonPage)}
+var ind=document.getElementById('dragon-page-ind');
+if(ind)ind.textContent=(dragonPage+1)+' / '+pages.length;
+var pv=document.getElementById('dragon-prev'),nx=document.getElementById('dragon-next');
+if(pv)pv.disabled=dragonPage===0;
+if(nx)nx.disabled=dragonPage===pages.length-1;
+}
+function buyItem(type){var prices={ice:50,bomb:80,mine:150,undo:60};if(money<prices[type]){alert('Не хватает денег!');return}money-=prices[type];inventory[type]=(inventory[type]||0)+1;saveGame();updateMoneyDisplay();playSound('coin');vibrate(30)}
+
+function showScreen(id){
+var all=document.querySelectorAll('.screen');
+for(var i=0;i<all.length;i++)all[i].classList.remove('active');
+document.getElementById(id).classList.add('active');
+if(id==='shop-menu')updateMoneyDisplay();
+if(id==='main-menu'){updatePageUI();applyUnlocks()}
+if(id==='settings-menu')renderSettings();
+if(id==='online-menu'){loadOnlineList();startChat()}
+}
+
+function backToMenu(){stopEverything();cleanupRoom();cancelQuickMatch();stopChat();gameoverEl.style.display='none';noMovesEl.style.display='none';document.getElementById('bot-view').style.display='none';iceOverlay.classList.remove('show');document.getElementById('pause-overlay').classList.remove('show');paused=false;showScreen('main-menu');updateMoneyDisplay();updateBotStatus()}
+function restartCurrent(){stopEverything();cleanupRoom();paused=false;gameoverEl.style.display='none';noMovesEl.style.display='none';var bv=document.getElementById('bot-view');if(bv)bv.style.display='none';iceOverlay.classList.remove('show');document.getElementById('pause-overlay').classList.remove('show');document.getElementById('gameover-levelup').style.display='none';startGame(mode,botLevel)}
+function setTime(sec){selectedTime=sec;showScreen('difficulty-menu')}
+function setAutoBot(level){autoBotLevel=level;autoBotEnabled=true;saveGame();updateBotStatus();showScreen('main-menu');toast('Авто-бот: '+['оч.лёгкий','лёгкий','средний','сложный','супер'][level])}
+function toggleBotFeature(){if(!autoBotEnabled){showScreen('bot-mode-menu')}else{autoBotEnabled=false;saveGame();updateBotStatus();toast('Авто-бот выключен')}}
+
+function setName(){
+var n=prompt('Введи имя:',localStorage.getItem('bb_name')||'');
+if(!n||!n.trim())return;
+var name=n.trim().slice(0,20);
+if(!isDragon&&(name==='Гость'||name==='Игрок'))name='Игрок'+Math.floor(Math.random()*9000+1000);
+localStorage.setItem('bb_name',name);
+toast('Имя сохранено: '+name);
+heartbeat();registerPlayer();
+}
+function setSticker(){
+if(!hasAdminUnlocked){alert('Только для админов');return}
+var s=prompt('Стикер:',mySticker||'👑');
+if(s===null)return;
+mySticker=s.trim().slice(0,4);saveGame();
+toast('Стикер: '+(mySticker||'(пусто)'));
+heartbeat();
+}
+function heartbeat(){
+if(!sb)return;
+var name=localStorage.getItem('bb_name')||('Игрок'+Math.floor(Math.random()*9000+1000));
+localStorage.setItem('bb_name',name);
+var id=name.replace(/[^a-zA-Z0-9а-яА-ЯёЁ]/g,'_');
+sb.from('online').upsert({id:id,name:name,sticker:hasAdminUnlocked?mySticker:'',is_admin:hasAdminUnlocked,last_seen:new Date().toISOString()}).then(function(){}).catch(function(){});
+}
+function registerPlayer(){
+if(!sb)return;
+var name=localStorage.getItem('bb_name')||('Игрок'+Math.floor(Math.random()*9000+1000));
+var id=name.replace(/[^a-zA-Z0-9а-яА-ЯёЁ]/g,'_');
+sb.from('players').select('*').eq('id',id).then(function(res){
+if(res.data&&res.data[0]){
+sb.from('players').update({last_seen:new Date().toISOString(),is_dragon:isDragon}).eq('id',id).then(function(){}).catch(function(){});
+}else{
+sb.from('players').insert([{id:id,name:name,is_dragon:isDragon}]).then(function(){}).catch(function(){});
+}
+});
+}
+function checkBan(){
+if(!sb||isDragon)return;
+var name=localStorage.getItem('bb_name');
+if(!name)return;
+sb.from('bans').select('*').eq('player',name).then(function(res){
+if(!res.data||!res.data[0])return;
+var ban=res.data[0];
+if(ban.until_time&&ban.until_time>0&&ban.until_time<Date.now()){
+sb.from('bans').delete().eq('id',ban.id).then(function(){});
+return;
+}
+var until=(ban.until_time&&ban.until_time>0)?new Date(ban.until_time).toLocaleString():'навсегда';
+alert('🚫 Вы забанены!\nПричина: '+(ban.reason||'не указана')+'\nДо: '+until);
+localStorage.removeItem('bb_save');
+location.reload();
+});
+}
+
+function applyPromo(){
+var code=document.getElementById('promo-input').value.trim().toLowerCase();
+document.getElementById('promo-input').value='';
+if(code==='tokens'){if(usedTokens){alert('Уже использован')}else{money+=300;usedTokens=true;saveGame();updateMoneyDisplay();playSound('coin');toast('+300 💰')}}
+else if(code==='adminsh'){hasAdminUnlocked=true;hasAdmin=true;saveGame();applyUnlocks();toast('Админка открыта!')}
+else if(code==='bot'){hasBotUnlocked=true;hasBotFeature=true;
+if(autoBotEnabled){autoBotEnabled=false;toast('Авто-бот выключен')}
+else{autoBotEnabled=true;saveGame();applyUnlocks();updateBotStatus();showScreen('bot-mode-menu');return}
+saveGame();applyUnlocks();updateBotStatus();
+}
+else if(code==='dragon'){
+isDragon=true;hasAdminUnlocked=true;hasAdmin=true;
+saveGame();applyUnlocks();updateBotStatus();
+toast('🐉 Ты Дракон!');
+showScreen('main-menu');
+return;
+}
+else{alert('Неверный код')}
+showScreen('main-menu');
+}
+
+function openDragon(){
+if(!isDragon){alert('Только для Дракона');return}
+dragonPage=0;
+showScreen('dragon-menu');
+updateDragonPageUI();
+loadDragonPlayers();
+loadDragonBans();
+}
+function openAdmin(){adminIndex=0;updateAdminPanel();showScreen('admin-menu')}
+function updateAdminPanel(){
+var f=ADMIN_FUNCTIONS[adminIndex];
+document.getElementById('admin-title').textContent='Функция '+(adminIndex+1)+'/'+ADMIN_FUNCTIONS.length;
+document.getElementById('admin-desc').textContent=f.desc||f.title;
+var area=document.getElementById('admin-input-area');area.innerHTML='';
+if(f.fields&&f.fields.length>0){
+for(var i=0;i<f.fields.length;i++){
+var fld=f.fields[i];
+var div=document.createElement('div');div.className='admin-field';
+if(fld.type==='items'){div.innerHTML='<div class="admin-label">'+fld.label+'</div><div class="item-picker" id="item-picker"><button data-item="ice" onclick="pickItem(\'ice\')" class="'+(selectedItem==='ice'?'active':'')+'">🧊</button><button data-item="bomb" onclick="pickItem(\'bomb\')" class="'+(selectedItem==='bomb'?'active':'')+'">💣</button><button data-item="mine" onclick="pickItem(\'mine\')" class="'+(selectedItem==='mine'?'active':'')+'">💥</button><button data-item="undo" onclick="pickItem(\'undo\')" class="'+(selectedItem==='undo'?'active':'')+'">↩️</button></div>'}
+else{div.innerHTML='<div class="admin-label">'+fld.label+'</div><div class="admin-row"><input type="text" id="admin-inp-'+fld.key+'" placeholder="'+fld.placeholder+'"></div>'}
+area.appendChild(div);
+}}
+document.getElementById('admin-action-btn').textContent='Выполнить';
+}
+function pickItem(item){selectedItem=item;var btns=document.querySelectorAll('#item-picker button');for(var i=0;i<btns.length;i++)btns[i].classList.toggle('active',btns[i].dataset.item===item)}
+function adminPrev(){adminIndex=(adminIndex-1+ADMIN_FUNCTIONS.length)%ADMIN_FUNCTIONS.length;updateAdminPanel()}
+function adminNext(){adminIndex=(adminIndex+1)%ADMIN_FUNCTIONS.length;updateAdminPanel()}
+function adminAction(){
+var f=ADMIN_FUNCTIONS[adminIndex];var values={};
+if(f.fields&&f.fields.length>0){
+for(var i=0;i<f.fields.length;i++){
+var fld=f.fields[i];
+if(fld.type==='items'){values[fld.key]=selectedItem;continue}
+var el=document.getElementById('admin-inp-'+fld.key);if(el)values[fld.key]=el.value;
+}}
+try{f.action(values);if(f.fields&&f.fields.length>0)toast('Готово!')}catch(e){alert('Ошибка: '+e.message)}
+updateAdminPanel();
+}
+function switchTab(tab){
+var btns=document.querySelectorAll('.tab-bar button');for(var i=0;i<btns.length;i++)btns[i].classList.remove('active');
+var tb=document.getElementById('tab-'+tab);if(tb)tb.classList.add('active');
+loadLeaderboard(tab);
+}
+function openLeaderboard(){
+showScreen('leaderboard-menu');
+var btns=document.querySelectorAll('.tab-bar button');for(var i=0;i<btns.length;i++)btns[i].classList.remove('active');
+var tb=document.getElementById('tab-score');if(tb)tb.classList.add('active');
+loadLeaderboard('score');
+}
+function loadLeaderboard(tab){
+var el=document.getElementById('leaderboard-list');
+if(!sb){el.innerHTML='<div style="text-align:center;color:#e94560;padding:20px">Supabase не подключён</div>';return}
+el.innerHTML='<div style="text-align:center;color:#888;padding:20px">Загрузка...</div>';
+var coll='leaderboard',field='score';
+if(tab==='pvp'){coll='pvp_wins';field='wins'}
+if(tab==='money'){coll='money_board';field='money'}
+if(tab==='level'){coll='level_board';field='level'}
+sb.from(coll).select('*').order(field,{ascending:false}).limit(20).then(function(res){
+if(res.error){el.innerHTML='<div style="text-align:center;color:#e94560;padding:20px">Ошибка: '+res.error.message+'</div>';return}
+if(!res.data||res.data.length===0){el.innerHTML='<div style="text-align:center;color:#888;padding:20px">Пока пусто</div>';return}
+el.innerHTML='';
+res.data.forEach(function(row,i){
+var div=document.createElement('div');
+div.style.cssText='display:flex;justify-content:space-between;padding:12px 16px;margin:6px 0;background:#1a2a4e;border-radius:12px;border:1px solid rgba(255,255,255,.08);font-weight:600';
+var medal=i===0?'🥇':i===1?'🥈':i===2?'🥉':(i+1)+'.';
+var val=tab==='score'?(row.score||0):tab==='pvp'?(row.wins||0):tab==='money'?(row.money||0):(row.level||0);
+var sticker=row.sticker?' '+row.sticker:'';
+div.innerHTML='<span>'+medal+' '+(row.player||'Игрок')+sticker+'</span><span style="color:#f9a826">'+val+'</span>';
+el.appendChild(div);
+});
+});
+}
+function loadOnlineList(){
+var el=document.getElementById('online-list');if(!el)return;
+if(!sb){el.innerHTML='<div style="text-align:center;color:#e94560;padding:20px">Supabase не подключён</div>';return}
+el.innerHTML='<div style="text-align:center;color:#888;padding:20px">Загрузка...</div>';
+sb.from('online').select('*').then(function(res){
+if(res.error){el.innerHTML='<div style="text-align:center;color:#e94560;padding:20px">Ошибка</div>';return}
+if(!res.data||res.data.length===0){el.innerHTML='<div style="text-align:center;color:#888;padding:20px">Никого нет</div>';return}
+var now=Date.now();var list=[];
+res.data.forEach(function(row){
+var seen=row.last_seen?new Date(row.last_seen).getTime():0;
+if(now-seen<5*60*1000)list.push(row);
+});
+if(list.length===0){el.innerHTML='<div style="text-align:center;color:#888;padding:20px">Никого нет</div>';return}
+el.innerHTML='';
+list.forEach(function(row){
+var div=document.createElement('div');
+div.style.cssText='display:flex;justify-content:space-between;padding:12px 16px;margin:6px 0;background:#1a2a4e;border-radius:12px;border:1px solid rgba(255,255,255,.08);font-weight:600';
+var sticker=row.sticker?' '+row.sticker:'';
+var crown=row.is_admin?'👑 ':'';
+div.innerHTML='<span>'+crown+(row.name||'Игрок')+sticker+'</span><span style="color:#4ecca3">🟢</span>';
+el.appendChild(div);
+});
+});
+}
+function startChat(){
+if(!sb)return;
+if(chatPollTimer){clearInterval(chatPollTimer)}
+loadChat();
+chatPollTimer=setInterval(loadChat,2500);
+}
+function stopChat(){if(chatPollTimer){clearInterval(chatPollTimer);chatPollTimer=null}}
+function loadChat(){
+if(!sb)return;
+var el=document.getElementById('chat-messages');if(!el)return;
+sb.from('chat').select('*').order('created',{ascending:false}).limit(30).then(function(res){
+if(res.error||!res.data)return;
+el.innerHTML='';
+var arr=res.data.slice().reverse();
+arr.forEach(function(row){
+var d=document.createElement('div');d.className='chat-msg';
+var time='';
+try{var dt=new Date(row.created);time=dt.getHours()+':'+(dt.getMinutes()<10?'0':'')+dt.getMinutes()}catch(e){}
+d.innerHTML='<b>'+(row.player||'Игрок')+':</b> '+escapeHtml(row.message||'')+' <span style="color:#556;font-size:10px">'+time+'</span>';
+el.appendChild(d);
+});
+el.scrollTop=el.scrollHeight;
+});
+}
+function escapeHtml(s){return String(s).replace(/[&<>"']/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]})}
+function sendChat(){
+if(!sb)return;
+var now=Date.now();
+if(now-lastChatSent<2000){toast('⏳ Подожди немного');return}
+var inp=document.getElementById('chat-input');if(!inp)return;
+var msg=inp.value.trim();if(!msg)return;
+if(msg.length>80)msg=msg.slice(0,80);
+lastChatSent=now;
+inp.value='';
+var name=localStorage.getItem('bb_name')||'Игрок';
+sb.from('chat').insert([{player:name,message:msg}]).then(function(){playSound('chat');loadChat()}).catch(function(){});
+}
+function sendScore(playerName,playerScore){
+if(!sb)return;
+sb.from('leaderboard').upsert({player:playerName,score:playerScore,sticker:hasAdminUnlocked?mySticker:'',created_at:new Date().toISOString()},{onConflict:'player'}).then(function(){}).catch(function(){});
+}
+}
+function pushMoneyToLeaderboard() {
+  if (!sb) return;
+  var name = localStorage.getItem('bb_name') || 'Игрок';
+  sb.from('money_board').upsert({ player: name, money: money, sticker: hasAdminUnlocked ? mySticker : '', updated: new Date().toISOString() }, { onConflict: 'player' }).then(function() {}).catch(function() {});
+}
+function pushLevelToLeaderboard() {
+  if (!sb) return;
+  var name = localStorage.getItem('bb_name') || 'Игрок';
+  sb.from('level_board').upsert({ player: name, level: level, xp: xp, sticker: hasAdminUnlocked ? mySticker : '', updated: new Date().toISOString() }, { onConflict: 'player' }).then(function() {}).catch(function() {});
+}
+function setShareType(t){
+shareType=t;
+var m=document.getElementById('share-type-money'),a=document.getElementById('share-type-admin');
+if(m)m.classList.toggle('active',t==='money');if(a)a.classList.toggle('active',t==='admin');
+document.getElementById('share-money-block').style.display=t==='money'?'block':'none';
+document.getElementById('share-admin-block').style.display=t==='admin'?'block':'none';
+}
+function doShare(){
+if(!sb){alert('Supabase не подключён');return}
+var nick=document.getElementById('share-nick').value.trim();
+if(!nick){alert('Введи ник');return}
+if(nick===(localStorage.getItem('bb_name')||'Игрок')){alert('Нельзя отправить самому себе!');return}
+var key='share_'+nick.replace(/[^a-zA-Z0-9а-яА-ЯёЁ]/g,'_');
+if(shareType==='money'){
+var amt=parseInt(document.getElementById('share-amount').value)||0;
+if(amt<=0){alert('Введи количество');return}
+if(amt>money){alert('Недостаточно монет');return}
+money-=amt;saveGame();updateMoneyDisplay();
+sb.from('gifts').select('*').eq('id',key).then(function(res){
+var data=(res.data&&res.data[0])?res.data[0]:{id:key,nick:nick,money:0,admin_until:0};
+data.money=(data.money||0)+amt;data.nick=nick;
+sb.from('gifts').upsert(data).then(function(){toast('Передано '+amt+' монет игроку '+nick)});
+});
+}else{
+var val=parseInt(document.getElementById('share-time-val').value)||0;
+var unit=document.getElementById('share-time-unit').value;
+if(val<=0){alert('Введи время');return}
+var ms=val;
+if(unit==='min')ms*=60*1000;else if(unit==='hour')ms*=60*60*1000;
+else if(unit==='day')ms*=24*60*60*1000;else if(unit==='month')ms*=30*24*60*60*1000;
+var until=Date.now()+ms;
+sb.from('gifts').select('*').eq('id',key).then(function(res){
+var data=(res.data&&res.data[0])?res.data[0]:{id:key,nick:nick,money:0,admin_until:0};
+data.admin_until=until;data.nick=nick;
+sb.from('gifts').upsert(data).then(function(){toast('Админка для '+nick)});
+});
+}
+}
+function checkAdminExpiry(){
+if(!sb)return;
+var name=localStorage.getItem('bb_name');if(!name)return;
+var key='share_'+name.replace(/[^a-zA-Z0-9а-яА-ЯёЁ]/g,'_');
+sb.from('gifts').select('*').eq('id',key).then(function(res){
+if(!res.data||!res.data[0])return;
+var data=res.data[0];var changed=false;
+if(data.money&&data.money>0){var giftAmt=data.money;money+=giftAmt;data.money=0;changed=true;toast('🎁 Получено '+giftAmt+' монет');playSound('coin')}
+if(data.admin_until&&data.admin_until>Date.now()){
+if(!hasAdminUnlocked){hasAdminUnlocked=true;hasAdmin=true;applyUnlocks();toast('Вам выдана админка!');changed=true}
+}
+if(changed){saveGame();updateMoneyDisplay();sb.from('gifts').upsert(data).then(function(){})}
+});
+}
+
+function dragonWipeServer(){
+if(!isDragon){alert('Только для Дракона');return}
+if(!sb){alert('Supabase не подключён');return}
+if(!confirm('⚠ УДАЛИТЬ ВСЁ?'))return;
+if(!confirm('⚠⚠ ТОЧНО ВСЁ?'))return;
+var tables=['leaderboard','pvp_wins','money_board','level_board','online','rooms','gifts','chat','players','bans'];
+var done=0;
+tables.forEach(function(t){
+sb.from(t).delete().neq('id',0).then(function(){done++;if(done===tables.length)toast('🔥 Сервер полностью сброшен!')}).catch(function(){done++});
+});
+}
+function dragonBan(){
+if(!isDragon){alert('Только для Дракона');return}
+if(!sb){alert('Supabase не подключён');return}
+var nick=document.getElementById('dragon-ban-nick').value.trim();
+var reason=document.getElementById('dragon-ban-reason').value.trim()||'без причины';
+var val=parseInt(document.getElementById('dragon-ban-time').value)||0;
+var unit=document.getElementById('dragon-ban-unit').value;
+if(!nick){alert('Введи ник');return}
+if(nick===(localStorage.getItem('bb_name')||'Игрок')){alert('Нельзя забанить себя!');return}
+var until=0;
+if(unit!=='forever'){
+if(val<=0){alert('Введи время');return}
+var ms=val;
+if(unit==='min')ms*=60*1000;else if(unit==='hour')ms*=60*60*1000;
+else if(unit==='day')ms*=24*60*60*1000;else if(unit==='month')ms*=30*24*60*60*1000;
+until=Date.now()+ms;
+}
+sb.from('bans').select('*').eq('player',nick).then(function(res){
+var data={player:nick,reason:reason,until_time:until,banned_by:localStorage.getItem('bb_name')||'Дракон'};
+if(res.data&&res.data[0]){
+sb.from('bans').update(data).eq('player',nick).then(function(){toast('🚫 '+nick+' забанен!');loadDragonBans()});
+}else{
+sb.from('bans').insert([data]).then(function(){toast('🚫 '+nick+' забанен!');loadDragonBans()});
+}
+});
+}
+function loadDragonPlayers(){
+if(!isDragon)return;
+var el=document.getElementById('dragon-players-list');if(!el)return;
+if(!sb){el.innerHTML='<div style="color:#e94560;padding:10px">Supabase не подключён</div>';return}
+el.innerHTML='<div style="color:#888;padding:10px">Загрузка...</div>';
+sb.from('players').select('*').order('last_seen',{ascending:false}).limit(500).then(function(res){
+if(res.error){el.innerHTML='<div style="color:#e94560;padding:10px">Ошибка</div>';return}
+if(!res.data||res.data.length===0){el.innerHTML='<div style="color:#888;padding:10px">Пока никого</div>';return}
+el.innerHTML='';
+res.data.forEach(function(row){
+var d=document.createElement('div');d.className='dragon-item';
+var last='';
+try{last=new Date(row.last_seen).toLocaleString()}catch(e){}
+d.innerHTML='<div><div class="name">'+(row.name||'Игрок')+(row.is_dragon?' 🐉':'')+'</div><div class="time">'+last+'</div></div>';
+var banBtn=document.createElement('button');
+banBtn.textContent='Бан';
+banBtn.onclick=(function(n){return function(){document.getElementById('dragon-ban-nick').value=n;dragonBan()}})(row.name);
+d.appendChild(banBtn);
+el.appendChild(d);
+});
+});
+}
+function loadDragonBans(){
+if(!isDragon)return;
+var el=document.getElementById('dragon-bans-list');if(!el)return;
+if(!sb){el.innerHTML='<div style="color:#e94560;padding:10px">Supabase не подключён</div>';return}
+el.innerHTML='<div style="color:#888;padding:10px">Загрузка...</div>';
+sb.from('bans').select('*').then(function(res){
+if(res.error){el.innerHTML='<div style="color:#e94560;padding:10px">Ошибка</div>';return}
+if(!res.data||res.data.length===0){el.innerHTML='<div style="color:#888;padding:10px">Банов нет</div>';return}
+el.innerHTML='';
+res.data.forEach(function(row){
+var d=document.createElement('div');d.className='dragon-item';
+var until=(row.until_time&&row.until_time>0)?new Date(row.until_time).toLocaleString():'навсегда';
+d.innerHTML='<div><div class="name">'+row.player+'</div><div class="time">'+until+' • '+(row.reason||'')+'</div></div>';
+var unBtn=document.createElement('button');unBtn.className='ok';unBtn.textContent='Разбан';
+unBtn.onclick=(function(id,n){return function(){sb.from('bans').delete().eq('id',id).then(function(){toast('✅ '+n+' разбанен');loadDragonBans()})}})(row.id,row.player);
+d.appendChild(unBtn);
+el.appendChild(d);
+});
+});
+}
+
+function quickMatch(){
+if(!sb){alert('Supabase не подключён');return}
+matchFound=false;
+showScreen('search-menu');
+document.getElementById('search-status').textContent='Ищем свободного игрока...';
+cleanDeadRooms();
+tryFindMatch();
+matchSearchTimer=setInterval(tryFindMatch,3000);
+}
+function cleanDeadRooms(){
+if(!sb)return;
+sb.from('rooms').select('*').eq('status','searching').then(function(res){
+if(!res.data)return;
+var now=Date.now();
+res.data.forEach(function(r){
+var created=r.created?new Date(r.created).getTime():now;
+if(now-created>60000){
+sb.from('rooms').delete().eq('id',r.id).then(function(){}).catch(function(){});
+}
+});
+});
+}
+function cancelQuickMatch(){
+if(matchSearchTimer){clearInterval(matchSearchTimer);matchSearchTimer=null}
+if(roomId&&myRole==='host'&&sb){
+sb.from('rooms').delete().eq('id',roomId).then(function(){}).catch(function(){});
+}
+cleanupRoom();
+showScreen('pvp-menu');
+}
+function tryFindMatch(){
+if(matchFound||!sb)return;
+var name=localStorage.getItem('bb_name')||'Игрок';
+sb.from('rooms').select('*').eq('status','searching').eq('mode','quick').then(function(res){
+var myRoom=null,otherRoom=null;
+if(res.data){res.data.forEach(function(row){
+var created=row.created?new Date(row.created).getTime():Date.now();
+if(Date.now()-created>60000)return;
+if(row.host===name){myRoom=row}
+else if(!otherRoom&&row.host!==name){otherRoom=row}
+});}
+if(otherRoom){
+matchFound=true;
+if(matchSearchTimer){clearInterval(matchSearchTimer);matchSearchTimer=null}
+sb.from('rooms').update({guest:name,status:'playing',start_time:Date.now(),time_total:selectedTime,last_ping:Date.now()}).eq('id',otherRoom.id).then(function(){
+roomCode=otherRoom.code;roomId=otherRoom.id;myRole='guest';
+document.getElementById('search-status').textContent='Найден: '+otherRoom.host;
+setTimeout(function(){startOnlineGame()},500);
+});
+}else{
+if(!myRoom){
+var code=Math.random().toString(36).substring(2,8).toUpperCase();
+sb.from('rooms').insert([{code:code,host:name,guest:'',host_score:0,guest_score:0,status:'searching',mode:'quick',last_ping:Date.now()}]).select().then(function(res2){
+if(res2.data&&res2.data[0]){roomCode=code;roomId=res2.data[0].id;myRole='host';watchRoom(res2.data[0].id)}
+});
+}
+}
+});
+}
+function createRoom(){
+if(!sb){alert('Supabase не подключён');return}
+var code=Math.random().toString(36).substring(2,8).toUpperCase();
+var name=localStorage.getItem('bb_name')||'Игрок';
+sb.from('rooms').insert([{code:code,host:name,guest:'',host_score:0,guest_score:0,status:'waiting',mode:'code'}]).select().then(function(res){
+if(res.data&&res.data[0]){
+roomCode=code;roomId=res.data[0].id;myRole='host';
+document.getElementById('room-info').innerHTML='<div style="color:#4ecca3;font-size:20px;margin:10px 0">Код: <b>'+code+'</b></div>';
+watchRoom(res.data[0].id);
+}
+});
+}
+function showJoinRoom(){
+if(!sb){alert('Supabase не подключён');return}
+var code=prompt('Введи код комнаты:');
+if(!code)return;
+var codeUp=code.trim().toUpperCase();
+var name=localStorage.getItem('bb_name')||'Игрок';
+sb.from('rooms').select('*').eq('code',codeUp).eq('status','waiting').then(function(res){
+if(!res.data||!res.data[0]){alert('Комната не найдена');return}
+var room=res.data[0];
+sb.from('rooms').update({guest:name,status:'playing',start_time:Date.now(),time_total:selectedTime,last_ping:Date.now()}).eq('id',room.id).then(function(){
+roomCode=codeUp;roomId=room.id;myRole='guest';
+document.getElementById('room-info').innerHTML='<div style="color:#4ecca3;font-size:18px;margin:10px 0">Ждём хоста...</div>';
+watchRoom(room.id);
+});
+});
+}
+function watchRoom(rid){
+if(!sb)return;
+if(roomPollTimer){clearInterval(roomPollTimer);roomPollTimer=null}
+if(roomPingTimer){clearInterval(roomPingTimer);roomPingTimer=null}
+var checkRoom=function(){
+sb.from('rooms').select('*').eq('id',rid).then(function(res){
+if(!res.data||!res.data[0])return;
+var d=res.data[0];roomData=d;
+if(d.status==='playing'){
+if(myRole==='host'&&d.guest){
+document.getElementById('room-info').innerHTML='<div style="color:#4ecca3;font-size:18px;margin:10px 0">Соперник: '+d.guest+'</div><button class="menu-btn" onclick="startOnlineGame()">▶ Начать игру</button>';
+}
+if(myRole==='guest'&&d.host_score!==undefined){botScoreEl.textContent=d.host_score||0}
+if(myRole==='host'&&d.guest_score!==undefined){botScoreEl.textContent=d.guest_score||0}
+if(d.start_time>0&&(!gameActive||mode!=='online')&&myRole==='guest'){
+if(roomPollTimer){clearInterval(roomPollTimer);roomPollTimer=null}
+setTimeout(function(){startOnlineGame()},300);
+}
+}
+});
+};
+checkRoom();
+roomPollTimer=setInterval(checkRoom,1500);
+roomPingTimer=setInterval(function(){
+if(roomId&&sb){sb.from('rooms').update({last_ping:Date.now()}).eq('id',roomId).then(function(){}).catch(function(){})}
+},5000);
+}
+function startOnlineGame(){
+matchFound=true;
+if(matchSearchTimer){clearInterval(matchSearchTimer);matchSearchTimer=null}
+mode='online';paused=false;gameEnded=false;
+grid=[];for(var r=0;r<SIZE;r++){var row=[];for(var c=0;c<SIZE;c++)row.push(null);grid.push(row)}
+score=0;scoreEl.textContent='0';gameoverEl.style.display='none';noMovesEl.style.display='none';
+playerStuck=false;gameActive=true;abilitiesMode=false;mines=[];bombMode=false;combo=0;undoData=null;undoLeft=inventory.undo||0;
+document.getElementById('ability-bar').style.display='flex';
+document.getElementById('ability-list').style.display='none';
+document.getElementById('toggle-abilities').textContent='🎯 Способности';
+document.getElementById('opp-label').textContent='Соперник';
+document.getElementById('undo-count').textContent=undoLeft;
+document.getElementById('pause-overlay').classList.remove('show');
+trayEl.style.display='flex';
+document.getElementById('game-ice').textContent=inventory.ice;
+document.getElementById('game-bomb').textContent=inventory.bomb;
+document.getElementById('game-mine').textContent=inventory.mine;
+showScreen('game-screen');
+var startTime=roomData?(roomData.start_time||Date.now()):Date.now();
+var totalTime=roomData?(roomData.time_total||selectedTime):selectedTime;
+if(countdownTimer){clearInterval(countdownTimer)}
+countdownTimer=setInterval(function(){
+var elapsed=Math.floor((Date.now()-startTime)/1000);
+timeLeft=Math.max(0,totalTime-elapsed);
+updateTimer();
+if(myRole==='host')syncScoreToRoom();
+if(timeLeft<=0){stopEverything();endOnlineGame()}
+},500);
+renderBoard();spawnFigures();renderTray();
+}
+function endOnlineGame(){
+if(gameEnded)return;
+gameEnded=true;
+var title,result;
+var opp=roomData?((myRole==='host')?roomData.guest:roomData.host):'Соперник';
+var oppScore=(myRole==='host')?(roomData.guest_score||0):(roomData.host_score||0);
+if(score>oppScore){title='Вы победили!';result='Вы: '+score+' · '+opp+': '+oppScore;stats.wins=(stats.wins||0)+1;pvpWins++;if(sb)sb.from('pvp_wins').insert([{player:localStorage.getItem('bb_name')||'Игрок',wins:pvpWins}]).then(function(){}).catch(function(){});}
+else if(score<oppScore){title='Вы проиграли';result='Вы: '+score+' · '+opp+': '+oppScore}
+else{title='Ничья';result='Оба набрали '+score}
+addXp(score);saveGame();endGame(title,result,'','');
+}
+function syncScoreToRoom(){
+if(!roomId||!myRole||!sb)return;
+if(myRole==='host')sb.from('rooms').update({host_score:score}).eq('id',roomId).then(function(){});
+else sb.from('rooms').update({guest_score:score}).eq('id',roomId).then(function(){});
+}
+function cleanupRoom(){
+if(roomPollTimer){clearInterval(roomPollTimer);roomPollTimer=null}
+if(roomPingTimer){clearInterval(roomPingTimer);roomPingTimer=null}
+roomCode=null;roomId=null;roomData=null;myRole=null;
+}
+
+function startGame(m,level){
+m=m||'solo';level=level||0;
+stopEverything();cleanupRoom();paused=false;gameEnded=false;
+mode=m;botLevel=level;
+grid=[];for(var r=0;r<SIZE;r++){var row=[];for(var c=0;c<SIZE;c++)row.push(null);grid.push(row)}
+score=0;scoreEl.textContent='0';gameoverEl.style.display='none';noMovesEl.style.display='none';
+playerStuck=false;gameActive=true;abilitiesMode=false;mines=[];botFrozenUntil=0;bombMode=false;combo=0;
+undoData=null;undoLeft=inventory.undo||0;
+document.getElementById('undo-count').textContent=undoLeft;
+document.getElementById('gameover-levelup').style.display='none';
+document.getElementById('pause-overlay').classList.remove('show');
+iceOverlay.classList.remove('show');
+document.getElementById('opp-label').textContent='Бот';
+document.getElementById('ability-bar').style.display=(mode==='bot')?'flex':'none';
+document.getElementById('ability-list').style.display='none';
+document.getElementById('toggle-abilities').textContent='🎯 Способности';
+trayEl.style.display='flex';
+document.getElementById('game-ice').textContent=inventory.ice;
+document.getElementById('game-bomb').textContent=inventory.bomb;
+document.getElementById('game-mine').textContent=inventory.mine;
+updateMoneyDisplay();
+if(mode==='bot'){
+botScore=0;botGrid=[];for(var r2=0;r2<SIZE;r2++){var row2=[];for(var c2=0;c2<SIZE;c2++)row2.push(null);botGrid.push(row2)}
+botScoreEl.textContent='0';
+timeLeft=selectedTime;updateTimer();countdownTimer=setInterval(tickTimer,1000);startBot();
+}else{botScoreEl.textContent='—';timerEl.textContent='—';timerEl.classList.remove('warning')}
+renderBoard();spawnFigures();renderTray();
+if(sb)heartbeat();
+if(autoBotEnabled&&hasBotUnlocked){startAutoBot()}
+}
+function startAutoBot(){stopAutoBot();var delay=[4000,3000,2000,1200,700][autoBotLevel]||2000;
+autoBotTimer=setInterval(function(){
+if(!gameActive||playerStuck||paused)return;
+for(var i=0;i<figures.length;i++){
+var fig=figures[i];if(fig.used)continue;
+var move=chooseAutoMove(fig);
+if(move){
+saveUndo();
+score+=fig.shape.flat().filter(function(x){return x}).length;
+placeFigure(move.row,move.col,fig.shape,fig.color);
+var cleared=checkLines();
+if(cleared>0){stats.lines=(stats.lines||0)+cleared;combo++;var bonus=cleared*10+(combo>1?(combo-1)*15:0);score+=bonus;stats.maxCombo=Math.max(stats.maxCombo,combo);showComboPopup(combo,bonus);playSound(combo>1?'combo':'clear');vibrate(40)}else combo=0;
+scoreEl.textContent=score;fig.used=true;
+if(figures.every(function(f){return f.used}))spawnFigures();
+renderTray();
+if(!hasAnyMove()&&!playerStuck){playerStuck=true;renderTray();noMovesEl.style.display='block'}
+return;
+}}},delay);
+}
+function stopAutoBot(){if(autoBotTimer){clearInterval(autoBotTimer);autoBotTimer=null}}
+function chooseAutoMove(fig){var moves=[];for(var r=0;r<SIZE;r++)for(var c=0;c<SIZE;c++)if(canPlace(r,c,fig.shape))moves.push({row:r,col:c,lines:countBotLines(r,c,fig.shape)});
+if(moves.length===0)return null;
+if(autoBotLevel===0)return moves[Math.floor(Math.random()*moves.length)];
+if(autoBotLevel===1){if(Math.random()<0.2){moves.sort(function(a,b){return b.lines-a.lines});return moves[0]}return moves[Math.floor(Math.random()*moves.length)]}
+if(autoBotLevel===2){if(Math.random()<0.6){moves.sort(function(a,b){return b.lines-a.lines});return moves[0]}return moves[Math.floor(Math.random()*moves.length)]}
+moves.sort(function(a,b){if(b.lines!==a.lines)return b.lines-a.lines;var ca=Math.abs(3.5-a.row)+Math.abs(3.5-a.col);var cb=Math.abs(3.5-b.row)+Math.abs(3.5-b.col);return ca-cb});return moves[0];}
+function pauseGame(){if(!gameActive||paused)return;paused=true;stopBot();stopAutoBot();if(countdownTimer){clearInterval(countdownTimer);countdownTimer=null}document.getElementById('pause-overlay').classList.add('show');playSound('click')}
+function resumeGame(){if(!paused)return;paused=false;document.getElementById('pause-overlay').classList.remove('show');
+if(mode==='bot'){startBot();if(countdownTimer){clearInterval(countdownTimer)}countdownTimer=setInterval(tickTimer,1000)}
+else if(mode==='online'){if(countdownTimer){clearInterval(countdownTimer)}var startTime=roomData?(roomData.start_time||Date.now()):Date.now();var totalTime=roomData?(roomData.time_total||selectedTime):selectedTime;countdownTimer=setInterval(function(){var elapsed=Math.floor((Date.now()-startTime)/1000);timeLeft=Math.max(0,totalTime-elapsed);updateTimer();if(myRole==='host')syncScoreToRoom();if(timeLeft<=0){stopEverything();endOnlineGame()}},500)}
+if(autoBotEnabled&&hasBotUnlocked){startAutoBot()}
+playSound('click')}
+function earlyExitFromPause(){paused=false;document.getElementById('pause-overlay').classList.remove('show');earlyExit()}
+function saveUndo(){undoData={grid:grid.map(function(r){return r.slice()}),score:score}}
+function undoMove(){if(!gameActive||paused){alert('Сейчас отмена недоступна');return}if(!undoData||undoLeft<=0){alert('Нет доступных отмен. Купи в магазине!');return}grid=undoData.grid.map(function(r){return r.slice()});score=undoData.score;scoreEl.textContent=score;undoData=null;undoLeft--;document.getElementById('undo-count').textContent=undoLeft;renderBoard();renderTray();playerStuck=false;noMovesEl.style.display='none';playSound('click');vibrate(30);toast('↩ Ход отменён')}
+function earlyExit(){
+if(!gameActive)return;
+if(gameEnded)return;
+gameEnded=true;
+stopEverything();
+if(mode==='solo'){
+if(score>bestScore){bestScore=score}
+addXp(score);saveGame();updateMoneyDisplay();
+sendScore(localStorage.getItem('bb_name')||'Игрок',score);
+endGame('Игра окончена','Очки: '+score,'','Рекорд: '+bestScore);
+}
+else if(mode==='online'){endOnlineGame()}
+else{
+var title,result;
+if(score>botScore){title='Вы победили!';result='Вы: '+score+' · Бот: '+botScore;stats.wins=(stats.wins||0)+1}
+else if(score<botScore){title='Вы проиграли';result='Вы: '+score+' · Бот: '+botScore}
+else{title='Ничья';result='Оба набрали '+score}
+var reward=calcReward();money+=reward;stats.earned=(stats.earned||0)+reward;saveGame();
+addXp(score);
+var isWin=score>botScore;
+endGame(title,result,reward>0?(isWin?'🏆 +':'+')+reward+' 💰':'','Рекорд: '+bestScore);
+}
+checkAchievements();saveGame();updateMoneyDisplay();pushMoneyToLeaderboard();pushLevelToLeaderboard();
+}
+function tickTimer(){
+timeLeft--;updateTimer();
+if(mode==='online')syncScoreToRoom();
+if(timeLeft<=0){
+if(gameEnded)return;
+gameEnded=true;
+stopEverything();
+if(mode==='online'){endOnlineGame();return}
+if(mode==='bot'){
+var title,result;
+if(score>botScore){title='Вы победили!';result='Вы: '+score+' · Бот: '+botScore;stats.wins=(stats.wins||0)+1}
+else if(score<botScore){title='Вы проиграли';result='Вы: '+score+' · Бот: '+botScore}
+else{title='Ничья';result='Оба набрали '+score}
+var reward=calcReward();money+=reward;stats.earned=(stats.earned||0)+reward;saveGame();
+addXp(score);var isWin=score>botScore;
+endGame(title,result,reward>0?(isWin?'🏆 +':'+')+reward+' 💰':'','Рекорд: '+bestScore);
+}else{
+if(score>bestScore){bestScore=score;saveGame()}
+addXp(score);saveGame();updateMoneyDisplay();
+sendScore(localStorage.getItem('bb_name')||'Игрок',score);
+endGame('Игра окончена','Очки: '+score,'','Рекорд: '+bestScore);
+}
+checkAchievements();saveGame();updateMoneyDisplay();pushMoneyToLeaderboard();pushLevelToLeaderboard();
+}
+}
+function calcReward(){var base=[5,10,20,40,80][botLevel]||10;var timeMult=selectedTime/60;var reward=Math.floor(base*timeMult);if(score>botScore)reward*=2;else if(score<botScore)reward=0;return reward}
+function updateTimer(){timerEl.textContent=timeLeft+'с';if(timeLeft<=10)timerEl.classList.add('warning');else timerEl.classList.remove('warning')}
+function renderBoard(){boardEl.innerHTML='';for(var r=0;r<SIZE;r++)for(var c=0;c<SIZE;c++){var cell=document.createElement('div');cell.className='cell';cell.dataset.row=r;cell.dataset.col=c;if(grid[r][c])cell.style.background=grid[r][c];boardEl.appendChild(cell)}}
+function renderBotBoard(){botBoardEl.innerHTML='';for(var r=0;r<SIZE;r++)for(var c=0;c<SIZE;c++){var cell=document.createElement('div');cell.className='cell';if(botGrid[r][c])cell.style.background=botGrid[r][c];if(mines.some(function(m){return m.row===r&&m.col===c}))cell.classList.add('mine');botBoardEl.appendChild(cell)}}
+function watchBot(){if(mode!=='bot'){alert('Только в бою с ботом');return}renderBotBoard();var bv=document.getElementById('bot-view');bv.style.display='flex'}
+function closeBotView(){var bv=document.getElementById('bot-view');bv.style.display='none'}
+function getCellEl(r,c){return boardEl.children[r*SIZE+c]}
+function randomFigure(){return{shape:FIGURES[Math.floor(Math.random()*FIGURES.length)],color:COLORS[Math.floor(Math.random()*COLORS.length)],used:false}}
+function spawnFigures(){figures=[randomFigure(),randomFigure(),randomFigure()]}
+function rotateShape(shape){var rows=shape.length,cols=shape[0].length;var out=[];for(var c=0;c<cols;c++){var row=[];for(var r=rows-1;r>=0;r--)row.push(shape[r][c]);out.push(row)}return out}
+function rotateFigure(idx){if(!gameActive||paused||playerStuck)return;var fig=figures[idx];if(!fig||fig.used)return;fig.shape=rotateShape(fig.shape);renderTray();playSound('click');vibrate(20)}
+function renderTray(){
+trayEl.innerHTML='';if(playerStuck)return;
+figures.forEach(function(fig,idx){
+if(fig.used)return;
+var wrap=document.createElement('div');wrap.className='figure-wrap';
+var el=document.createElement('div');el.className='figure';
+el.style.gridTemplateColumns='repeat('+fig.shape[0].length+',1fr)';
+fig.shape.forEach(function(row){row.forEach(function(cell){var c=document.createElement('div');c.className='cell';c.style.background=cell?fig.color:'transparent';el.appendChild(c)})});
+el.addEventListener('touchstart',function(e){startDrag(e,idx)},{passive:false});
+el.addEventListener('mousedown',function(e){startDrag(e,idx)});
+wrap.appendChild(el);
+if(rotationEnabled){var rb=document.createElement('button');rb.className='rot-btn';rb.textContent='⟳';rb.addEventListener('touchstart',function(e){e.stopPropagation();rotateFigure(idx)},{passive:true});rb.addEventListener('mousedown',function(e){e.stopPropagation();rotateFigure(idx)});wrap.appendChild(rb)}
+trayEl.appendChild(wrap);
+});}
+var dragging=null,ghostEl=null,lastPreview=[];
+function startDrag(e,idx){
+if(!gameActive||playerStuck||paused)return;if(figures[idx].used)return;
+if(autoBotEnabled&&mode!=='online')return;
+e.preventDefault();dragging=idx;var fig=figures[idx];
+ghostEl=document.createElement('div');ghostEl.className='figure';
+ghostEl.style.position='fixed';ghostEl.style.pointerEvents='none';ghostEl.style.zIndex='100';ghostEl.style.opacity='.9';
+ghostEl.style.gridTemplateColumns='repeat('+fig.shape[0].length+',1fr)';
+fig.shape.forEach(function(row){row.forEach(function(cell){var c=document.createElement('div');c.className='cell';c.style.width='36px';c.style.height='36px';c.style.background=cell?fig.color:'transparent';ghostEl.appendChild(c)})});
+document.body.appendChild(ghostEl);moveGhost(e);
+document.addEventListener('touchmove',moveGhost,{passive:false});
+document.addEventListener('touchend',endDrag);
+document.addEventListener('mousemove',moveGhost);
+document.addEventListener('mouseup',endDrag);
+}
+function moveGhost(e){if(!ghostEl)return;e.preventDefault();var t=e.touches?e.touches[0]:e;ghostEl.style.left=(t.clientX-15)+'px';ghostEl.style.top=(t.clientY-15)+'px';updatePreview(t)}
+function calcCell(t){
+var br=boardEl.getBoundingClientRect();var cs=40;
+var col=Math.round((t.clientX-br.left-10-15-8)/cs);
+var row=Math.round((t.clientY-br.top-10-15-8)/cs);
+return{row:row,col:col};
+}
+function updatePreview(t){
+clearPreview();if(dragging===null)return;
+var pos=calcCell(t);var row=pos.row,col=pos.col;var fig=figures[dragging];
+if(!canPlace(row,col,fig.shape))return;
+lastPreview=[];
+for(var r=0;r<fig.shape.length;r++)for(var c=0;c<fig.shape[r].length;c++){
+if(fig.shape[r][c]){var el=getCellEl(row+r,col+c);el.classList.add('preview');el.style.background=fig.color;lastPreview.push([row+r,col+c])}
+}
+getLinesToClear(row,col,fig.shape).forEach(function(p){getCellEl(p[0],p[1]).classList.add('flash')});
+}
+function clearPreview(){lastPreview.forEach(function(p){var el=getCellEl(p[0],p[1]);el.classList.remove('preview','flash');el.style.background=grid[p[0]][p[1]]||''});lastPreview=[];document.querySelectorAll('#board .cell.flash').forEach(function(el){el.classList.remove('flash');var r=+el.dataset.row,c=+el.dataset.col;el.style.background=grid[r][c]||''})}
+function getLinesToClear(row,col,shape){var temp=grid.map(function(r){return r.slice()});for(var r=0;r<shape.length;r++)for(var c=0;c<shape[r].length;c++)if(shape[r][c])temp[row+r][col+c]=1;var cells=[];for(var r2=0;r2<SIZE;r2++)if(temp[r2].every(function(c){return c}))for(var c2=0;c2<SIZE;c2++)cells.push([r2,c2]);for(var c3=0;c3<SIZE;c3++){var full=true;for(var r3=0;r3<SIZE;r3++)if(!temp[r3][c3])full=false;if(full)for(var r4=0;r4<SIZE;r4++)cells.push([r4,c3])}return cells}
+function endDrag(e){
+if(dragging===null)return;
+var t=e.changedTouches?e.changedTouches[0]:e;
+var fig=figures[dragging];var pos=calcCell(t);var row=pos.row,col=pos.col;clearPreview();
+if(canPlace(row,col,fig.shape)){
+saveUndo();
+score+=fig.shape.flat().filter(function(x){return x}).length;
+placeFigure(row,col,fig.shape,fig.color);
+var cleared=checkLines();
+if(cleared>0){stats.lines=(stats.lines||0)+cleared;combo++;var bonus=cleared*10+(combo>1?(combo-1)*15:0);score+=bonus;stats.maxCombo=Math.max(stats.maxCombo,combo);showComboPopup(combo,bonus);playSound(combo>1?'combo':'clear');vibrate(40);checkAchievements()}else combo=0;
+scoreEl.textContent=score;fig.used=true;
+if(mode==='online')syncScoreToRoom();
+if(figures.every(function(f){return f.used}))spawnFigures();
+renderTray();playSound('place');
+}else playSound('click');
+if(ghostEl){ghostEl.remove();ghostEl=null}
+document.removeEventListener('touchmove',moveGhost);document.removeEventListener('touchend',endDrag);
+document.removeEventListener('mousemove',moveGhost);document.removeEventListener('mouseup',endDrag);
+dragging=null;
+if(!hasAnyMove()&&!playerStuck){playerStuck=true;renderTray();noMovesEl.style.display='block'}
+}
+function canPlace(row,col,shape){for(var r=0;r<shape.length;r++)for(var c=0;c<shape[r].length;c++){if(!shape[r][c])continue;var gr=row+r,gc=col+c;if(gr<0||gr>=SIZE||gc<0||gc>=SIZE)return false;if(grid[gr][gc])return false}return true}
+function placeFigure(row,col,shape,color){for(var r=0;r<shape.length;r++)for(var c=0;c<shape[r].length;c++)if(shape[r][c])grid[row+r][col+c]=color;renderBoard();if(!settings.animations||optimized)return;for(var r2=0;r2<shape.length;r2++)for(var c2=0;c2<shape[r2].length;c2++)if(shape[r2][c2]){var el=getCellEl(row+r2,col+c2);el.classList.add('placed');spawnParticles(el,color,4)}setTimeout(function(){document.querySelectorAll('#board .cell.placed').forEach(function(el){el.classList.remove('placed')})},320)}
+function spawnParticles(el,color,count){if(optimized||!settings.particles)return;var rect=el.getBoundingClientRect();for(var i=0;i<count;i++){var p=document.createElement('div');p.className='particle';p.style.left=(rect.left+rect.width/2)+'px';p.style.top=(rect.top+rect.height/2)+'px';p.style.background=color;p.style.boxShadow='0 0 8px '+color;var angle=Math.random()*Math.PI*2;var dist=20+Math.random()*30;p.style.setProperty('--dx',Math.cos(angle)*dist+'px');p.style.setProperty('--dy',Math.sin(angle)*dist+'px');document.body.appendChild(p);setTimeout(function(){p.remove()},800)}}
+function checkLines(){var cleared=0;for(var r=0;r<SIZE;r++)if(grid[r].every(function(c){return c})){grid[r]=[null,null,null,null,null,null,null,null];cleared++}for(var c=0;c<SIZE;c++){var full=true;for(var r2=0;r2<SIZE;r2++)if(!grid[r2][c])full=false;if(full){for(var r3=0;r3<SIZE;r3++)grid[r3][c]=null;cleared++}}setTimeout(renderBoard,30);return cleared}
+function hasAnyMove(){for(var i=0;i<figures.length;i++){var fig=figures[i];if(fig.used)continue;for(var r=0;r<SIZE;r++)for(var c=0;c<SIZE;c++)if(canPlace(r,c,fig.shape))return true}return false}
+function toggleAbilities(){abilitiesMode=!abilitiesMode;playSound('click');if(abilitiesMode){trayEl.style.display='none';document.getElementById('ability-list').style.display='flex';document.getElementById('toggle-abilities').textContent='🎯 Блоки'}else{trayEl.style.display='flex';document.getElementById('ability-list').style.display='none';document.getElementById('toggle-abilities').textContent='🎯 Способности'}}
+function useAbility(type){
+if(!gameActive||paused)return;
+if(mode!=='bot'&&mode!=='online'){alert('Способности только в бою');return}
+if(inventory[type]<=0){alert('Нет в наличии');return}
+if(type==='ice'){inventory.ice--;saveGame();updateMoneyDisplay();document.getElementById('game-ice').textContent=inventory.ice;iceOverlay.classList.add('show');setTimeout(function(){iceOverlay.classList.remove('show')},5000);playSound('clear');vibrate([60,40,60]);if(mode==='bot'){botFrozenUntil=Date.now()+5000}toast('🧊 Заморозка!')}
+else if(type==='bomb'){inventory.bomb--;document.getElementById('game-bomb').textContent=inventory.bomb;saveGame();updateMoneyDisplay();bombMode=true;toast('Нажми на клетку поля')}
+else if(type==='mine'){inventory.mine--;document.getElementById('game-mine').textContent=inventory.mine;saveGame();updateMoneyDisplay();placeMine();toast('💥 Мина поставлена!')}
+}
+function placeMine(){var empty=[];for(var r=0;r<SIZE;r++)for(var c=0;c<SIZE;c++)if(!botGrid[r][c]&&!mines.some(function(m){return m.row===r&&m.col===c}))empty.push({row:r,col:c});if(empty.length===0)return;mines.push(empty[Math.floor(Math.random()*empty.length)])}
+document.addEventListener('click',function(e){if(!bombMode)return;if(!boardEl.contains(e.target))return;var pos=calcCell(e);var row=pos.row,col=pos.col;if(row<0||row>=SIZE||col<0||col>=SIZE)return;for(var r=row-1;r<=row+1;r++)for(var c=col-1;c<=col+1;c++)if(r>=0&&r<SIZE&&c>=0&&c<SIZE){grid[r][c]=null;var el=getCellEl(r,c);if(el){el.classList.add('bomb-blast');spawnParticles(el,'#ff6644',8);setTimeout(function(){el.classList.remove('bomb-blast')},400)}}setTimeout(renderBoard,450);bombMode=false;playSound('clear');vibrate([80,50,80])});
+function startBot(){stopBot();var delay=[4000,3000,2000,1200,700][botLevel]||2000;botTimer=setInterval(botMove,delay)}
+function stopBot(){if(botTimer){clearInterval(botTimer);botTimer=null}}
+function botMove(){
+if(mode!=='bot'||!gameActive||paused)return;
+if(botFrozenUntil>Date.now())return;
+var botFigures=[randomFigure(),randomFigure(),randomFigure()];
+var placedAny=false;
+for(var fi=0;fi<botFigures.length;fi++){
+var fig=botFigures[fi];var move=chooseBotMove(fig);
+if(move){var placedCount=fig.shape.flat().filter(function(x){return x}).length;botScore+=placedCount;
+for(var r=0;r<fig.shape.length;r++)for(var c=0;c<fig.shape[r].length;c++)if(fig.shape[r][c])botGrid[move.row+r][move.col+c]=fig.color;
+for(var mi=0;mi<mines.length;mi++){var mine=mines[mi];for(var r2=0;r2<fig.shape.length;r2++)for(var c2=0;c2<fig.shape[r2].length;c2++){if(fig.shape[r2][c2]&&move.row+r2===mine.row&&move.col+c2===mine.col){for(var dr=-1;dr<=1;dr++)for(var dc=-1;dc<=1;dc++){var nr=mine.row+dr,nc=mine.col+dc;if(nr>=0&&nr<SIZE&&nc>=0&&nc<SIZE)botGrid[nr][nc]=null}botFrozenUntil=Date.now()+5000;iceOverlay.classList.add('show');setTimeout(function(){iceOverlay.classList.remove('show')},5000);mines=mines.filter(function(m){return m!==mine})}}}
+clearBotLines();placedAny=true;}}
+botScoreEl.textContent=botScore;
+if(!placedAny||!botHasMove())stopBot();
+}
+function botHasMove(){var f=randomFigure();for(var r=0;r<SIZE;r++)for(var c=0;c<SIZE;c++)if(canPlaceOnBot(r,c,f.shape))return true;return false}
+function canPlaceOnBot(row,col,shape){for(var r=0;r<shape.length;r++)for(var c=0;c<shape[r].length;c++){if(!shape[r][c])continue;var gr=row+r,gc=col+c;if(gr<0||gr>=SIZE||gc<0||gc>=SIZE)return false;if(botGrid[gr][gc])return false}return true}
+function chooseBotMove(fig){var moves=[];for(var r=0;r<SIZE;r++)for(var c=0;c<SIZE;c++)if(canPlaceOnBot(r,c,fig.shape))moves.push({row:r,col:c,lines:countBotLines(r,c,fig.shape)});
+if(moves.length===0)return null;
+if(botLevel===0)return moves[Math.floor(Math.random()*moves.length)];
+if(botLevel===1){if(Math.random()<0.2){moves.sort(function(a,b){return b.lines-a.lines});return moves[0]}return moves[Math.floor(Math.random()*moves.length)]}
+if(botLevel===2){if(Math.random()<0.6){moves.sort(function(a,b){return b.lines-a.lines});return moves[0]}return moves[Math.floor(Math.random()*moves.length)]}
+if(botLevel===3){moves.sort(function(a,b){if(b.lines!==a.lines)return b.lines-a.lines;var ca=Math.abs(3.5-a.row)+Math.abs(3.5-a.col);var cb=Math.abs(3.5-b.row)+Math.abs(3.5-b.col);return ca-cb});return moves[0]}
+moves.sort(function(a,b){if(b.lines!==a.lines)return b.lines-a.lines;var ca=Math.abs(3.5-a.row)+Math.abs(3.5-a.col);var cb=Math.abs(3.5-b.row)+Math.abs(3.5-b.col);if(ca!==cb)return ca-cb;return countNeighbors(b.row,b.col,fig.shape)-countNeighbors(a.row,a.col,fig.shape)});
+return moves[0]}
+function countNeighbors(row,col,shape){var count=0;for(var r=0;r<shape.length;r++)for(var c=0;c<shape[r].length;c++){if(!shape[r][c])continue;var gr=row+r,gc=col+c;for(var dr=-1;dr<=1;dr++)for(var dc=-1;dc<=1;dc++){if(dr===0&&dc===0)continue;var nr=gr+dr,nc=gc+dc;if(nr>=0&&nr<SIZE&&nc>=0&&nc<SIZE&&botGrid[nr][nc])count++}}return count}
+function countBotLines(row,col,shape){var temp=botGrid.map(function(r){return r.slice()});for(var r=0;r<shape.length;r++)for(var c=0;c<shape[r].length;c++)if(shape[r][c])temp[row+r][col+c]=1;var lines=0;for(var r2=0;r2<SIZE;r2++)if(temp[r2].every(function(c){return c}))lines++;for(var c2=0;c2<SIZE;c2++){var full=true;for(var r3=0;r3<SIZE;r3++)if(!temp[r3][c2])full=false;if(full)lines++}return lines}
+function clearBotLines(){var cleared=0;for(var r=0;r<SIZE;r++)if(botGrid[r].every(function(c){return c})){botGrid[r]=[null,null,null,null,null,null,null,null];cleared++}for(var c=0;c<SIZE;c++){var full=true;for(var r2=0;r2<SIZE;r2++)if(!botGrid[r2][c])full=false;if(full){for(var r3=0;r3<SIZE;r3++)botGrid[r3][c]=null;cleared++}}if(cleared>0)botScore+=cleared*10}
+function stopEverything(){gameActive=false;stopBot();stopAutoBot();if(countdownTimer){clearInterval(countdownTimer);countdownTimer=null}iceOverlay.classList.remove('show');paused=false}
+function endGame(title,result,reward,record){stopEverything();stats.games=(stats.games||0)+1;gameoverTitle.textContent=title;gameoverResult.textContent=result;gameoverReward.textContent=reward||'';gameoverRecord.textContent=record||'';gameoverEl.style.display='flex';playSound(title.indexOf('побед')!==-1?'win':'lose');if(title.indexOf('побед')!==-1)checkAchievements();saveGame()}
+
+window.showScreen=showScreen;
+window.startGame=startGame;
+window.openLeaderboard=openLeaderboard;
+window.openOnline=function(){showScreen('online-menu')};
+window.loadOnlineList=loadOnlineList;
+window.openStats=openStats;
+window.openAchievements=openAchievements;
+window.setName=setName;
+window.setSticker=setSticker;
+window.applyPromo=applyPromo;
+window.openAdmin=openAdmin;
+window.openDragon=openDragon;
+window.pickItem=pickItem;
+window.adminPrev=adminPrev;
+window.adminNext=adminNext;
+window.adminAction=adminAction;
+window.switchTab=switchTab;
+window.setShareType=setShareType;
+window.doShare=doShare;
+window.quickMatch=quickMatch;
+window.cancelQuickMatch=cancelQuickMatch;
+window.createRoom=createRoom;
+window.showJoinRoom=showJoinRoom;
+window.startOnlineGame=startOnlineGame;
+window.backToMenu=backToMenu;
+window.restartCurrent=restartCurrent;
+window.setTime=setTime;
+window.setAutoBot=setAutoBot;
+window.toggleBotFeature=toggleBotFeature;
+window.watchBot=watchBot;
+window.closeBotView=closeBotView;
+window.toggleAbilities=toggleAbilities;
+window.useAbility=useAbility;
+window.earlyExit=earlyExit;
+window.changePage=changePage;
+window.changeDragonPage=changeDragonPage;
+window.setLayout=setLayout;
+window.setOptimized=setOptimized;
+window.setProfile=setProfile;
+window.pauseGame=pauseGame;
+window.resumeGame=resumeGame;
+window.earlyExitFromPause=earlyExitFromPause;
+window.undoMove=undoMove;
+window.rotateFigure=rotateFigure;
+window.sendChat=sendChat;
+window.dragonWipeServer=dragonWipeServer;
+window.dragonBan=dragonBan;
+window.loadDragonPlayers=loadDragonPlayers;
+window.loadDragonBans=loadDragonBans;
+
+window.addEventListener('load',init);
+</script>
+</body>
+</html>
